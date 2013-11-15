@@ -1,0 +1,9 @@
+megs: 32
+
+romimage: file=/usr/share/bochs/BIOS-bochs-latest
+
+floppya: 1_44=boot.img, status=inserted
+
+boot: floppy
+
+log: bochsout.txt

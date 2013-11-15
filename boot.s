@@ -1,5 +1,8 @@
 .code16
-.text
+    .section .text
+    .global _start
+
+_start:
     mov %cs, %ax
     mov %ax, %ds
     mov %ax, %es
@@ -16,9 +19,9 @@ PrintStr:
     int $0x10
     ret
 
-BootMessage: .ascii "flooooor, hi"
-
-len = . - BootMessage
+BootMessage: 
+    .ascii "flooooor, hi"
+    .equ len, . - BootMessage
 
 .org 510
 .word 0xaa55
