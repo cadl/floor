@@ -7,3 +7,4 @@ floppya: 1_44=boot.img, status=inserted
 boot: floppy
 
 log: bochsout.txt
+

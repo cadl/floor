@@ -1,7 +1,7 @@
 SECTIONS {
-    . = 0x7c00;
+    . = 0x0;
     .text : {
         _ftext = .;
         *(.text)
-    } = 0
+    }
 }

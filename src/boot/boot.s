@@ -1,7 +1,7 @@
 .code16
 .section .text
 
-.set OS_SEG, 0x0900
+.set OS_SEG, 0x0800
 .set OS_OFFSET, 0x0000
 
 .global _start
@@ -41,12 +41,12 @@ start_program:
     
     movw $OS_SEG, %ax
     movw %ax, %es
-    mov $2, %cl
+    movb $2, %cl
 
 read_loop:
     movb $0x02, %ah
     movb $0x1, %al
-    movb $0x0, %dh
+    movb $0x0, %ch
     movb $0x0, %dh
     movb $0, %dl
     int $0x13
@@ -57,20 +57,10 @@ read_loop:
     movw %ax, %es
     incb %cl
     
-    cmpb $3, %cl
+    cmpb $2, %cl
     jbe read_loop
     
     jmp os_entry
-
-fail:
-    movw $err_msg, %si
-fail_loop:
-    lodsb
-    andb %al, %al
-    jz end
-    movb $0x0e, %ah
-    int $0x10
-    jmp fail_loop
 
 os_entry:
     ljmp $OS_SEG, $OS_OFFSET
@@ -79,8 +69,20 @@ end:
     hlt
     jmp end
 
+fail:
+    movw 0x07C0, %ax
+    movw %ax, %es
+    movw $err_msg, %ax
+    movw %ax, %bp
+    movw $err_msg_len, %cx
+    movw $0x1301, %ax
+    movw $0x00c, %bx
+    movb $0, %dl
+    int $0x10
+    jmp end
+
 err_msg: .ascii "read sector failed" 
-         .byte 0
+.set err_msg_len, . - err_msg
 
 .org 510
 .word 0xaa55
