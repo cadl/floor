@@ -8,15 +8,15 @@
     .byte   (\Base >> 24) & 0xFF
 .endm   
 
-.macro InitDesc Offset GdtSegAddr
+.macro InitDesc SegLabel, SegDesc
     xor %ax, %ax
     mov %cs, %ax
     shl $4, %eax
-    addl $(\Offset), %eax
-    movw %ax, (\GdtSegAddr + 2)
+    addl $(\SegLabel), %eax
+    movw %ax, (\SegDesc + 2)
     shr $16, %eax
-    movb %al, (\GdtSegAddr + 4)
-    movb %ah, (\GdtSegAddr + 7)
+    movb %al, (\SegDesc + 4)
+    movb %ah, (\SegDesc + 7)
 .endm
 
 
