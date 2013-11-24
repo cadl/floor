@@ -1,34 +1,26 @@
 AS=as
 LD=ld
-BOOTLDFILE=boot.lds
-OSLDFILE=os.lds
 OBJCOPY=objcopy
+CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32
+ASFLAGS=-I ../include --32
+KELNELOBJS=kernel.o
+LDFLAGS=-m elf_i386
 
-KERNELINC = kernel/include/
-BOOTINC = boot/include/
+export AS LD OBJCOPY CFLAGS ASFLAGS LDFLAGS
 
 
+all: sys.img
 
-all: boot.img
+kernel/kernel.bin:kernel/*.c kernel/*.s
+	make -C kernel/
 
-boot.o: boot/boot.s
-	$(AS) boot/boot.s -o boot.o -I $(BOOTINC)
+boot/boot.bin: boot/boot.o
+	make -C boot/
 
-os.o: kernel/os.s
-	$(AS) kernel/os.s -o os.o -I $(KERNELINC)
-
-boot.elf: boot.o
-	$(LD) boot.o -o boot.elf -T$(BOOTLDFILE)
-
-boot.bin: boot.elf
-	$(OBJCOPY) -R .pdr -R .comment -S -O binary boot.elf boot.bin
-
-os.bin: os.o
-	$(LD) -Ttext=0x0 -s os.o -o os.bin --oformat binary
-
-boot.img: boot.bin os.bin
-	cat os.bin >> boot.bin
-	dd if=boot.bin of=boot.img bs=512
+sys.img:boot/boot.bin kernel/kernel.bin
+	cat kernel/kernel.bin >> boot/boot.bin
+	dd if=boot/boot.bin of=sys.img bs=512
 
 clean:
-	rm -f boot.o boot.bin boot.img os.bin os.o boot.elf
+	rm -f kernel/*.o kernel/kernel.bin kernel/kernel.elf
+	rm -f boot/boot.bin boot/boot.elf boot/boot.o

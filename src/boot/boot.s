@@ -1,7 +1,7 @@
 .code16
 .section .text
 
-.set OS_SEG, 0x0800
+.set OS_SEG, 0x800
 .set OS_OFFSET, 0x0000
 
 .global _start
@@ -57,7 +57,7 @@ read_loop:
     movw %ax, %es
     incb %cl
     
-    cmpb $2, %cl
+    cmpb $5, %cl
     jbe read_loop
     
     jmp os_entry

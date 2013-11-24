@@ -2,7 +2,7 @@ megs: 32
 
 romimage: file=/usr/share/bochs/BIOS-bochs-latest
 
-floppya: 1_44=boot.img, status=inserted
+floppya: 1_44=sys.img, status=inserted
 
 boot: floppy
 

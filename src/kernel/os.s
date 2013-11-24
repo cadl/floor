@@ -1,8 +1,10 @@
 .include "pm.inc"
 
 .code16
-.text
-jmp LABEL_BEGIN
+.section .text
+
+BOOT_START:
+    jmp LABEL_BEGIN
 
 # segment descritors for GDT
 LABEL_GDT:          Descriptor 0, 0, 0
@@ -57,8 +59,12 @@ LABEL_SEG_CODE32:
     movb $0xC, %ah
     movb $'F', %al
     mov %ax, %gs:(%edi)
+    
+    mov $0x10000, %eax
+    mov %ax, %ss
+
+    call kernel_start
+    
     jmp .
 
 .set SegCode32Len, . - LABEL_SEG_CODE32
-
-.org 0x200, 0x41
