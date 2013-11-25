@@ -8,7 +8,8 @@ BOOT_START:
 
 # segment descritors for GDT
 LABEL_GDT:          Descriptor 0, 0, 0
-LABEL_DESC_CODE32:  Descriptor 0, (SegCode32Len-1), (DA_C + DA_32)
+LABEL_DESC_CODE32:  Descriptor 0, 0xffffffff, (DA_C + DA_32)
+LABEL_DESC_DATA:    Descriptor 0, 0xffffffff, DA_DRW
 LABEL_DESC_VIDEO:   Descriptor 0xB8000, 0xffff, DA_DRW 
 
 .set GdtLen, . - LABEL_GDT
@@ -18,6 +19,7 @@ GdtPtr:
     .4byte 0             # Base field
 
 .set SelectorCode32, (LABEL_DESC_CODE32 - LABEL_GDT)
+.set SelectorData, (LABEL_DESC_DATA - LABEL_GDT)
 .set SelectorVideo, (LABEL_DESC_VIDEO - LABEL_GDT)
 
 
@@ -29,6 +31,7 @@ LABEL_BEGIN:
     mov %ax, %es
     
     InitDesc LABEL_SEG_CODE32, LABEL_DESC_CODE32
+    InitDesc 0x0, LABEL_DESC_DATA
     
     xor %eax, %eax
     mov %ds, %ax
@@ -60,8 +63,8 @@ LABEL_SEG_CODE32:
     movb $'F', %al
     mov %ax, %gs:(%edi)
     
-    mov $0x10000, %eax
-    mov %ax, %ss
+    mov $(SelectorData), %ax
+    mov %ax, %ds
 
     call kernel_start
     

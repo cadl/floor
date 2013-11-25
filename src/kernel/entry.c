@@ -2,7 +2,9 @@
 #include <monitor.h>
 
 
-void kernel_start()
+int kernel_start()
 {
-    monitor_puts("a a hi\ne\n");
+    monitor_clear();
+    monitor_puts("aaaaaabbbbbb\n");
+    return 0x42;
 }
