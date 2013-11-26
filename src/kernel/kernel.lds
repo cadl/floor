@@ -1,6 +1,4 @@
-OUTPUT_FORMAT("binary")
-STARTUP("os.o")
-
+STARTUP("kernel.o")
 phys = 0x0;
 
 SECTIONS {

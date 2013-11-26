@@ -1,9 +1,15 @@
 SUBDIR=kernel/
-OBJS=entry.o os.o monitor.o common.o
+OBJS=entry.o kernel.o monitor.o common.o
 KERNELLDS=kernel.lds
 
-kernel.bin:$(OBJS)
-	$(LD) -s $(OBJS) -o kernel.bin -T $(KERNELLDS) $(LDFLAGS)
+kernel.bin:kernel.elf kernel.sym
+	$(OBJCOPY) -O binary kernel.elf kernel.bin
+
+kernel.elf:$(OBJS)
+	$(LD) $(OBJS) -o kernel.elf -T $(KERNELLDS) $(LDFLAGS)
+
+kernel.sym:kernel.elf
+	$(OBJCOPY) --only-keep-debug kernel.elf kernel.sym
 
 %.o:%.c
 	$(CC) $(CFLAGS) $< -c -o $@

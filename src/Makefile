@@ -1,12 +1,13 @@
 AS=as
 LD=ld
 OBJCOPY=objcopy
-CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32
+CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32 -g
 ASFLAGS=-I ../include --32
 KELNELOBJS=kernel.o
 LDFLAGS=-m elf_i386
+CC=gcc
 
-export AS LD OBJCOPY CFLAGS ASFLAGS LDFLAGS
+export AS CC LD OBJCOPY CFLAGS ASFLAGS LDFLAGS
 
 
 all: sys.img
@@ -22,5 +23,5 @@ sys.img:boot/boot.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=sys.img bs=512
 
 clean:
-	rm -f kernel/*.o kernel/kernel.bin kernel/kernel.elf
+	rm -f kernel/*.o kernel/kernel.bin kernel/kernel.elf lernel/kernel.sym
 	rm -f boot/boot.bin boot/boot.elf boot/boot.o
