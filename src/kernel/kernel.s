@@ -1,15 +1,12 @@
 .include "pm.inc"
 
 .code16
-.section .text
+.text
+jmp LABEL_BEGIN
 
-BOOT_START:
-    jmp LABEL_BEGIN
-
-# segment descritors for GDT
 LABEL_GDT:          Descriptor 0, 0, 0
-LABEL_DESC_CODE32:  Descriptor 0, 0xffffffff, (DA_C + DA_32)
-LABEL_DESC_DATA:    Descriptor 0x0, 0xffffffff, DA_DRW
+LABEL_DESC_CODE32:  Descriptor 0x0000, 0xffffffff, (DA_C + DA_32)
+LABEL_DESC_DATA:    Descriptor 0x0000, 0xffffffff, DA_DRW
 LABEL_DESC_VIDEO:   Descriptor 0xB8000, 0xffff, DA_DRW 
 
 .set GdtLen, . - LABEL_GDT
@@ -23,20 +20,19 @@ GdtPtr:
 .set SelectorVideo, (LABEL_DESC_VIDEO - LABEL_GDT)
 
 
-/* begin */
 LABEL_BEGIN:
     mov %cs, %ax
     mov %ax, %ds
     mov %ax, %ss
     mov %ax, %es
     
-    InitDesc LABEL_SEG_CODE32, LABEL_DESC_CODE32
-    #InitDesc 0x0, LABEL_DESC_DATA
+    #InitDesc LABEL_SEG_CODE32, LABEL_DESC_CODE32
     
     xor %eax, %eax
-    mov %ds, %ax
-    shl $4, %eax
-    add $(LABEL_GDT), %eax
+    #mov %ds, %ax
+    #shl $4, %eax
+    #add $(LABEL_GDT), %eax
+    movl $(LABEL_GDT), %eax
     movl %eax, (GdtPtr + 2)
 
     lgdtw GdtPtr
@@ -51,21 +47,20 @@ LABEL_BEGIN:
     orl $1, %eax
     movl %eax, %cr0
 
-    ljmp $SelectorCode32, $0
+    ljmp $SelectorCode32, $LABEL_SEG_CODE32
 
 LABEL_SEG_CODE32:
-    .code32
+.code32
     movw $(SelectorVideo), %ax
     movw %ax, %gs
+    movw $(SelectorData), %ax
+    movw %ax, %ds
     
     movl $((80 * 10 + 0) * 2), %edi
     movb $0xC, %ah
     movb $'F', %al
     mov %ax, %gs:(%edi)
     
-    mov $(SelectorData), %ax
-    mov %ax, %ds
-
     call kernel_start
     
     jmp .

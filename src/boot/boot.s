@@ -1,8 +1,8 @@
 .code16
 .section .text
 
-.set OS_SEG, 0x800
-.set OS_OFFSET, 0x0000
+.set OS_SEG, 0x0
+.set OS_OFFSET, 0x8000
 
 .global _start
 
@@ -39,7 +39,7 @@ start_program:
     cld     #clear direction flag
     sti     #set interrupt flag
     
-    movw $OS_SEG, %ax
+    movw $0x800, %ax
     movw %ax, %es
     movb $2, %cl
 
