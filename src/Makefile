@@ -22,5 +22,5 @@ sys.img:boot/boot.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=sys.img bs=512
 
 clean:
-	rm -f kernel/*.o kernel/kernel.bin kernel/kernel.elf lernel/kernel.sym
+	rm -f kernel/*.o kernel/kernel.bin kernel/kernel-debug.elf kernel/kernel-debug.sym
 	rm -f boot/boot.bin boot/boot.elf boot/boot.o
