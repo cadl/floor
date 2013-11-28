@@ -1,5 +1,5 @@
 SUBDIR=kernel/
-OBJS=entry.o kernel.o monitor.o common.o
+OBJS=entry.o setup.o monitor.o common.o
 KERNELLDS=kernel.lds
 
 kernel.bin:kernel.elf kernel.sym

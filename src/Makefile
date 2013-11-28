@@ -3,7 +3,6 @@ LD=ld
 OBJCOPY=objcopy
 CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32 -g
 ASFLAGS=-I ../include --32
-KELNELOBJS=kernel.o
 LDFLAGS=-m elf_i386
 CC=gcc
 
