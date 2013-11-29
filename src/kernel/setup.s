@@ -55,6 +55,9 @@ LABEL_SEG_CODE32:
     movw %ax, %gs
     movw $(SelectorData), %ax
     movw %ax, %ds
+    movw %ax, %ss
+    movw %ax, %es
+    movw %ax, %fs
     
     movl $((80 * 10 + 0) * 2), %edi
     movb $0xC, %ah

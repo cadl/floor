@@ -8,7 +8,11 @@ u8int cursor_y = 0;
 
 static void move_cursor()
 {
-    
+    u16int cursorLocation = cursor_y * 80 + cursor_x;
+    outb(0x3d4, 14);
+    outb(0x3d5, cursorLocation>>8);
+    outb(0x3d4, 15);
+    outb(0x3d5, cursorLocation);
 }
 
 void monitor_putc(char c)
@@ -67,6 +71,8 @@ void monitor_clear()
     }
     cursor_x = 0;
     cursor_y = 0;
+
+    move_cursor();
 }
 
 
@@ -77,4 +83,29 @@ void monitor_puts(char *c)
     {
         monitor_putc(c[i]);
     }
+}
+
+
+void monitor_put_hex(u32int n)
+{
+    
+}
+
+
+void monitor_put_dec(u32int n)
+{
+    int i=9, remain;
+    char digit[11] = {0};
+
+    digit[10] = '\0';
+    digit[i] = '0' + n % 10;
+    remain = n / 10;
+
+    while(remain)
+    {
+        i --;
+        digit[i] = '0' + remain % 10;
+        remain /= 10;
+    }
+    monitor_puts(digit+i);
 }
