@@ -2,17 +2,38 @@
 
 
 u16int *video_memory = (u16int *)0xb8000;
-
 u8int cursor_x = 0;
 u8int cursor_y = 0;
 
-static void move_cursor()
+
+void move_cursor()
 {
     u16int cursorLocation = cursor_y * 80 + cursor_x;
     outb(0x3d4, 14);
     outb(0x3d5, cursorLocation>>8);
     outb(0x3d4, 15);
     outb(0x3d5, cursorLocation);
+}
+
+
+void scroll()
+{
+    u8int attrByte = (0 << 4) | (15 &0x0F);
+    u16int blank = 0x20 | (attrByte << 8);
+
+    if (cursor_y >= 25)
+    {
+        int i;
+        for (i=0; i<24*80; i++)
+        {
+            video_memory[i] = video_memory[i+80];
+        }
+        for (i=24*80; i<25*80; i++)
+        {
+            video_memory[i] = blank;
+        }
+        cursor_y = 24;
+    }
 }
 
 void monitor_putc(char c)
@@ -56,6 +77,8 @@ void monitor_putc(char c)
         cursor_x = 0;
         cursor_y += 1;
     }
+    scroll();
+    move_cursor();
 }
 
 
@@ -88,16 +111,38 @@ void monitor_puts(char *c)
 
 void monitor_put_hex(u32int n)
 {
-    
+    int i=14, remain;
+    char digit[16];
+
+    digit[15] = '\0';
+    digit[i] = '0' + n % 16;
+    if (digit[i] > '9')
+    {
+        digit[i] = 'A' + (digit[i] - '9' - 1);
+    }
+    remain = n / 16;
+
+    while (remain)
+    {
+        i--;
+        if (digit[i] > '9')
+        {
+            digit[i] = 'A' + (digit[i] - '9' - 1);
+        }
+        remain = remain / 16;
+    }
+    digit[i-1] = 'x';
+    digit[i-2] = '0';
+    monitor_puts(digit+i-2);
 }
 
 
 void monitor_put_dec(u32int n)
 {
-    int i=9, remain;
-    char digit[11] = {0};
+    int i=14, remain;
+    char digit[16];
 
-    digit[10] = '\0';
+    digit[15] = '\0';
     digit[i] = '0' + n % 10;
     remain = n / 10;
 
