@@ -1,7 +1,7 @@
 AS=as
 LD=ld
 OBJCOPY=objcopy
-CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32 -g
+CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32 -g -Wall
 ASFLAGS=-I ../include --32
 LDFLAGS=-m elf_i386
 CC=gcc
@@ -22,5 +22,5 @@ sys.img:boot/boot.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=sys.img bs=512
 
 clean:
-	rm -f kernel/*.o kernel/kernel.bin kernel/kernel-debug.elf kernel/kernel-debug.sym
+	rm -f kernel/*.o kernel/kernel.bin kernel/kernel.elf
 	rm -f boot/boot.bin boot/boot.elf boot/boot.o
