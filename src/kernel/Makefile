@@ -1,5 +1,5 @@
 SUBDIR=kernel/
-OBJS=entry.o setup.o monitor.o common.o x86.o gdt.o
+OBJS=entry.o setup.o monitor.o common.o x86.o gdt.o int.o interrupt.o
 KERNELLDS=kernel.lds
 
 kernel.bin:kernel.elf
@@ -11,5 +11,5 @@ kernel.elf:$(OBJS)
 %.o:%.c
 	$(CC) $(CFLAGS) $< -c -o $@
 
-%.o:%.s
-	$(AS) $< -o $@ $(ASFLAGS)
+%.o:%.S
+	$(CC) $(CFLAGS) -D__ASM__ $< -c -o $@ 

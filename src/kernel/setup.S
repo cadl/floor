@@ -1,7 +1,7 @@
-.include "pm.inc"
+.include "asm.inc"
 
 .code16
-.text
+.section .text
 jmp LABEL_BEGIN
 
 LABEL_GDT:          Descriptor 0, 0, 0
@@ -26,12 +26,7 @@ LABEL_BEGIN:
     mov %ax, %ss
     mov %ax, %es
     
-    #InitDesc LABEL_SEG_CODE32, LABEL_DESC_CODE32
-    
     xor %eax, %eax
-    #mov %ds, %ax
-    #shl $4, %eax
-    #add $(LABEL_GDT), %eax
     movl $(LABEL_GDT), %eax
     movl %eax, (GdtPtr + 2)
 

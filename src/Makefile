@@ -2,16 +2,16 @@ AS=as
 LD=ld
 OBJCOPY=objcopy
 CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32 -g -Wall
-ASFLAGS=-I ../include --32
+ASFLAGS= -I../include --32
 LDFLAGS=-m elf_i386
 CC=gcc
 
-export AS CC LD OBJCOPY CFLAGS ASFLAGS LDFLAGS
+export CC LD OBJCOPY CFLAGS LDFLAGS AS ASFLAGS
 
 
 all: sys.img
 
-kernel/kernel.bin:kernel/*.c kernel/*.s
+kernel/kernel.bin:kernel/*.c kernel/*.S
 	make -C kernel/
 
 boot/boot.bin: boot/boot.o

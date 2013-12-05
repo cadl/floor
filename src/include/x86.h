@@ -2,9 +2,12 @@
 
 
 extern void gdt_load(u32int ptr);
-void init_descriptor_tables();
+extern void idt_load(u32int ptr);
 void init_gdt();
-void gdt_set_des(s32int num, u32int base, u32int limit, u8int access, u8int gran);
+void init_idt();
+void init_descriptor_tables();
+void gdt_set_gate(s32int num, u32int base, u32int limit, u8int access, u8int gran);
+void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags);
 
 
 struct gdt_entry_struct

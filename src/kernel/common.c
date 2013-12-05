@@ -21,3 +21,8 @@ u16int inw(u16int port)
     asm volatile ("inw %1, %0": "=a"(ret): "d"(port));
     return ret;
 }
+
+void lidt(u32int idt_ptr)
+{
+    asm volatile ("lidt (%0)" :: "r"(idt_ptr));
+}

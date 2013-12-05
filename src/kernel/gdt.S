@@ -1,6 +1,6 @@
 .section .text
-.global gdt_load
 
+.global gdt_load
 .type gdt_load, @function
 gdt_load:
     movl 4(%esp), %eax
@@ -11,7 +11,7 @@ gdt_load:
     movw %ax, %fs
     movw %ax, %gs
     movw %ax, %ss
-    ljmp $0x80, $load
+    ljmp $0x08, $load
 
 load:
     ret

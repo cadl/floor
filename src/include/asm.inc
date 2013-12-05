@@ -67,3 +67,22 @@
 .set    SA_RPL3, 3
 .set    SA_TIG, 0
 .set    SA_TIL, 4
+
+
+/* about int */
+.macro ISR_NOERRCODE Fun Num
+.global \Fun
+\Fun:
+    cli
+    pushl $0
+    pushl $\Num
+    jmp interrupt_entry
+.endm
+
+.macro ISR_ERRCODE Fun Num
+.global \Fun
+\Fun:
+    cli
+    pushl $\Num
+    jmp interrupt_entry
+.endm
