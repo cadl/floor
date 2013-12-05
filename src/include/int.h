@@ -59,18 +59,7 @@
 #define IRQ_HD2         15
 
 #ifndef __ASM__
-#include "common.h"
-
-struct registers_struct
-{
-    u32int ds, es, fs, gs;
-    u32int ebp, esi, edi, edx, ecx, ebx, eax;
-    u32int int_no, err_code;
-    u32int eip, cs, eflags, esp, ss;
-} __attribute__((packed));
-
-
-typedef struct registers_struct registers_t;
+#include "type.h"
 
 void interrupt_handler(int in, registers_t *reg);
 

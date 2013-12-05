@@ -1,4 +1,14 @@
-/* macros */
+/*
+        macro for asm code
+        
+include:
+    - Descriptor Base, Limit, Attr      define descriptor
+    - InitDesc OffSet, GdtSegAddr       init descriptor in setup.S (pay attention to args)
+    - ISR_ERRCODE Fun, Num              isr with error code
+    - ISR_NOERRCODE Fun, Num            isr without error code
+    - any GDT attr
+
+                                */
 
 .macro Descriptor Base, Limit, Attr
     .2byte  \Limit & 0xFFFF

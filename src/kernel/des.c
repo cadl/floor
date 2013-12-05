@@ -1,5 +1,5 @@
-#include "common.h"
-#include "x86.h"
+#include "type.h"
+#include "des.h"
 #include "int.h"
 
 gdt_entry_t gdt_entries[5];

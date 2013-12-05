@@ -1,4 +1,4 @@
-.include "asm.inc"
+.include "asm/smacro.inc"
 
 .code16
 .section .text

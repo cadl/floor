@@ -1,6 +1,6 @@
-#include "common.h"
+#include "type.h"
 #include "monitor.h"
-#include "x86.h"
+#include "des.h"
 
 
 int kernel_start()

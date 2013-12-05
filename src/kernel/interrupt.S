@@ -1,5 +1,5 @@
 #include "int.h"
-.include "asm.inc"
+.include "asm/smacro.inc"
 
 
 .section .text

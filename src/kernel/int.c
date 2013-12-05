@@ -1,4 +1,4 @@
-#include "common.h"
+#include "type.h"
 #include "int.h"
 #include "monitor.h"
 
