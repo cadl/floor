@@ -57,7 +57,7 @@ read_loop:
     movw %ax, %es
     incb %cl
     
-    cmpb $10, %cl
+    cmpb $13, %cl
     jbe read_loop
     
     jmp os_entry

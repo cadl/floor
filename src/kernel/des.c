@@ -1,6 +1,7 @@
 #include "type.h"
 #include "des.h"
 #include "int.h"
+#include "pic.h"
 
 gdt_entry_t gdt_entries[5];
 gdt_ptr_t gdt_ptr;
@@ -63,6 +64,7 @@ void init_idt()
     idt_set_gate((u8int)INT_IRQ15, (u32int)irq15_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_SYSCALL, (u32int)syscall_entry, 0x08, 0x8E);
     lidt((u32int)(&idt_ptr));
+    PIC_remap();
 }
 
 void init_descriptor_tables()

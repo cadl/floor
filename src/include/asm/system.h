@@ -30,4 +30,20 @@ static inline void lidt(u32int idt_ptr)
     __asm__ volatile ("lidt (%0)" :: "r"(idt_ptr));
 }
 
+static inline void cli(void)
+{
+    __asm__ volatile ("cli" ::);
+}
+
+static inline void sti(void)
+{
+    __asm__ volatile ("sti" ::);
+}
+
+static inline void io_wait(void)
+{
+    __asm__ volatile ("jmp 1f\n\t"
+                      "1:jmp 2f\n\t"
+                      "2:");
+}
 #endif
