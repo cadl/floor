@@ -31,8 +31,6 @@ LABEL_BEGIN:
     movl %eax, (GdtPtr + 2)
 
     lgdtw GdtPtr
-
-    cli
     
     inb $0x92, %al
     orb $2, %al

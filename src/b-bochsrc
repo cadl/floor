@@ -6,4 +6,5 @@ floppya: 1_44=sys.img, status=inserted
 
 boot: floppy
 
+debug: action=ignore, pic=report
 log: bochsout.txt
