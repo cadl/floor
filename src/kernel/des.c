@@ -72,7 +72,7 @@ void init_descriptor_tables()
     init_gdt();
     init_idt();
     PIC_remap();
-    init_timer(50);
+    init_timer(301931);
 }
 
 

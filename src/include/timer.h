@@ -4,5 +4,5 @@
 #include "type.h"
 
 void init_timer(u32int frequency);
-void timer_interrupt(registers_t *preg);
+void timer_interrupt(int in, registers_t *preg);
 #endif
