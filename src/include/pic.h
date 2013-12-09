@@ -1,5 +1,6 @@
 #ifndef __PIC_H
 #define __PIC_H
+#include "type.h"
 
 #define PIC1            0x20        // IO base address of master PIC
 #define PIC2            0xA0        // IO base address of slave PIC
@@ -22,10 +23,17 @@
 #define ICW4_BUF_MASTER 0x0c
 #define ICW4_SFNM       0x10
 
+#define PIC_READ_IRR    0x0a
+#define PIC_READ_ISR    0x0b
+
 
 void PIC_remap();
 void PIC_sendEOI(int irq);
 void mask_irq(int irq);
 void unmask_irq(int irq);
+void spurious_irq_interrupt(int in, registers_t *reg);
+u16int PIC_get_irq_reg(int ocw3);
+u16int PIC_get_irr(void);
+u16int PIC_get_isr(void);
 
 #endif
