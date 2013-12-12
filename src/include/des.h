@@ -8,7 +8,6 @@
 //  func:
 //      - init_gdt
 //      - init_idt
-//      - init_descripor_tables
 //      - gdt_set_gate
 //      - idt_set_gate
 
@@ -57,7 +56,6 @@ typedef struct idt_ptr_struct idt_ptr_t;
 
 void init_gdt();
 void init_idt();
-void init_descriptor_tables();
 void gdt_set_gate(s32int num, u32int base, u32int limit, u8int access, u8int gran);
 void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags);
 

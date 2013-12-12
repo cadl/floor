@@ -67,15 +67,6 @@ void init_idt()
     lidt((u32int)(&idt_ptr));
 }
 
-void init_descriptor_tables()
-{
-    init_gdt();
-    init_idt();
-    PIC_remap();
-    init_timer(301931);
-}
-
-
 void gdt_set_gate(s32int num, u32int base, u32int limit, u8int access, u8int gran)
 {
     gdt_entries[num].base_low       = (base & 0xFFFF);
