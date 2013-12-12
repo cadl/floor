@@ -1,12 +1,8 @@
 SUBDIR=kernel/
 OBJS=entry.o setup.o monitor.o des.o gdt.o int.o interrupt.o timer.o pic.o
-KERNELLDS=kernel.lds
 
-kernel.bin:kernel.elf
-	$(OBJCOPY) -O binary kernel.elf kernel.bin
-
-kernel.elf:$(OBJS)
-	$(LD) $(OBJS) -o kernel.elf -T $(KERNELLDS) $(LDFLAGS)
+kernel.o:$(OBJS)
+	$(LD) -r $^ $(LDFLAGS) -o kernel.o
 
 %.o:%.c
 	$(CC) $(CFLAGS) $< -c -o $@

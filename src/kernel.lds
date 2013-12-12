@@ -1,4 +1,4 @@
-STARTUP("setup.o")
+STARTUP("kernel/setup.o")
 phys = 0x8000;
 
 SECTIONS {
