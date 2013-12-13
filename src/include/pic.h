@@ -1,6 +1,6 @@
 #ifndef __PIC_H
 #define __PIC_H
-#include "type.h"
+#include <type.h>
 
 #define PIC1            0x20        // IO base address of master PIC
 #define PIC2            0xA0        // IO base address of slave PIC

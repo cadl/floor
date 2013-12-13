@@ -1,7 +1,7 @@
 #ifndef __MONITOR_H
 #define __MONITOR_H
 
-#include "type.h"
+#include <type.h>
 
 
 void scroll();

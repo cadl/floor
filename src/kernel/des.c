@@ -1,8 +1,8 @@
-#include "type.h"
-#include "des.h"
-#include "int.h"
-#include "pic.h"
-#include "timer.h"
+#include <type.h>
+#include <des.h>
+#include <int.h>
+#include <pic.h>
+#include <timer.h>
 
 gdt_entry_t gdt_entries[5];
 gdt_ptr_t gdt_ptr;

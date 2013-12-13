@@ -1,8 +1,9 @@
 #include <memory.h>
 #include <type.h>
+#include <sys.h>
 
 
-u32int placement_addr = 0x600000;
+u32int placement_addr = (u32int)KMALLOC_START;
 
 void* kmalloc(u32int size)
 {
@@ -28,8 +29,10 @@ void memset(void *ptr, u8int val, u32int size)
 
 void init_frame()
 {
-    u32int total_mem = (u32int)TOTAL_MEM;
-    nframes = total_mem/0x1000/32;
-    frames = (u32int*)kmalloc(sizeof(u32int)*nframes);
-    memset(frames, 0, nframes);
+    int i;
+    memset(frames, 0xff, sizeof(u32int) * FRAMES_NUM);
+    for (i=0; i<(u32int)KERNEL_END; i+=0x1000)
+    {
+        clear_frame(i/0x1000);
+    }
 }

@@ -1,8 +1,8 @@
-#include "type.h"
-#include "int.h"
-#include "monitor.h"
-#include "pic.h"
-#include "timer.h"
+#include <type.h>
+#include <int.h>
+#include <monitor.h>
+#include <pic.h>
+#include <timer.h>
 
 
 void interrupt_handler(int in, registers_t *reg)

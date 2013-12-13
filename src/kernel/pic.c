@@ -1,7 +1,8 @@
-#include "type.h"
-#include "pic.h"
-#include "asm/system.h"
-#include "int.h"
+#include <type.h>
+#include <pic.h>
+#include <asm/system.h>
+#include <int.h>
+
 
 void PIC_remap()
 {

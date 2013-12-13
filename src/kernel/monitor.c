@@ -1,6 +1,6 @@
-#include "monitor.h"
-#include "type.h"
-#include "asm/system.h"
+#include <monitor.h>
+#include <type.h>
+#include <asm/system.h>
 
 
 u16int *video_memory = (u16int *)0xb8000;

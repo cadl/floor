@@ -6,15 +6,14 @@
 #define BITMAP_INDEX(a) ((a) / (8*4))
 #define BITMAP_OFFSET(a) ((a) % (8*4))
 
-// |       |--boot---|-----kernel--------|-malloc-memory-|
-// |xxxxxxx|xxxxxxxxx|xxxxxxxxx|xxxxxxxxx|xxxxxxxxxxxxxxx|
-// 0     0x7c00    0x8000             0x600000  
+// |       |--B---|--K------|-----KM--|---U--------|
+// |xxxxxxx|xxxxxx|xxxxxxxxx|xxxxxxxxx|xxxxxxxxxxxx|
+// 0     0x7c00  0x8000   0x600000  0x1000000     0x2000000  
 
 void* kmalloc(u32int size);
 void memset(void* ptr, u8int val, u32int size);
 
-u32int nframes;        // byte of bitmap
-u32int *frames;
+u32int frames[FRAMES_NUM];
 
 static void mark_frame(u32int frame_idx)
 {
@@ -40,7 +39,7 @@ static u32int test_frame(u32int frame_idx)
 static u32int get_free_frame_idx()
 {
     u32int i, j;
-    for (i=0; i<BITMAP_INDEX(nframes); i++)
+    for (i=0; i<BITMAP_INDEX(FRAMES_NUM); i++)
     {
         if (frames[i] != 0xffffffff)
         {

@@ -5,7 +5,7 @@
 
 void alloc_page(page_t *page, int user, int rw)
 {
-    if (!(page->frame))
+    if (!(page->present))
     {
         u32int frame_idx = get_free_frame_idx();
         if (frame_idx == (u32int)-1)
@@ -36,15 +36,16 @@ page_t *laddr2page(u32int line_addr, page_directory_t *pd)
     u32int pt_idx, pg_idx; 
     pt_idx = line_addr / 0x1000 / 1024;
     pg_idx = line_addr / 0x1000 % 1024;
-    if (pd->page_tables[pt_idx].frame)
+    if (pd->page_tables[pt_idx].present)
     {
         return &((page_table_t *)((pd->page_tables[pt_idx]).frame*0x1000))->pages[pg_idx];
     }
     else
     {
+        monitor_put_hex(line_addr);
+        monitor_putc('\n');
         alloc_page(&(pd->page_tables[pt_idx]), 1, 1);
-        memset(&pd->page_tables[pt_idx], 0, sizeof(page_table_t));
-        pd->page_tables[pt_idx].present = 1;
+        monitor_puts("2page\n");
         return &((page_table_t *)((pd->page_tables[pt_idx]).frame*0x1000))->pages[pg_idx];
 
     }
@@ -52,16 +53,28 @@ page_t *laddr2page(u32int line_addr, page_directory_t *pd)
 
 void init_paging()
 {
-    int i;
-    page_t *tmp;
+    int i, j;
+    u32int start=0;
     init_frame(); 
     kernel_page_directory = (page_directory_t *)kmalloc(sizeof(page_directory_t));
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
     current_page_directory = kernel_page_directory;
-    for (i=0; i<(u32int)KERNEL_END; i+=0x1000)
+    kernel_page_tables = (page_table_t *)kmalloc(sizeof(page_table_t)*4);
+    memset(kernel_page_tables, 0, sizeof(page_table_t)*4);
+    for (i=0; i<4; i++)
     {
-        tmp = laddr2page(i, kernel_page_directory);
-        alloc_page(tmp, 1, 1);
+        for(j=0; j<1024; j++)
+        {
+            kernel_page_tables[i].pages[j].frame = start;
+            kernel_page_tables[i].pages[j].present = 1;
+            kernel_page_tables[i].pages[j].user = 1;
+            kernel_page_tables[i].pages[j].rw = 1;
+            start++;
+        }
+        kernel_page_directory->page_tables[i].frame = ((u32int)&(kernel_page_tables[i]))/0x1000;
+        kernel_page_directory->page_tables[i].present = 1;
+        kernel_page_directory->page_tables[i].user = 1;
+        kernel_page_directory->page_tables[i].rw = 1;
     }
     switch_page_directory(kernel_page_directory);
 }
@@ -74,5 +87,5 @@ void switch_page_directory(page_directory_t *pd)
     __asm__ volatile ("mov %%cr0, %0": "=r"(cr0));
     cr0 |= 0x80000000;
     __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));
-
+    monitor_puts("cr\n");
 }

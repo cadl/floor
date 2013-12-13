@@ -59,7 +59,7 @@
 #define IRQ_HD2         15
 
 #ifndef __ASM__
-#include "type.h"
+#include <type.h>
 
 void interrupt_handler(int in, registers_t *reg);
 

@@ -1,9 +1,9 @@
-#include "timer.h"
-#include "monitor.h"
-#include "type.h"
-#include "asm/system.h"
-#include "pic.h"
-#include "int.h"
+#include <timer.h>
+#include <monitor.h>
+#include <type.h>
+#include <asm/system.h>
+#include <pic.h>
+#include <int.h>
 
 u32int tick = 0;
 

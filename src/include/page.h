@@ -1,6 +1,6 @@
 #ifndef __PAGE_H
 #define __PAGE_H
-#include "type.h"
+#include <type.h>
 #include <sys.h>
 
 typedef struct page_struct
@@ -25,6 +25,7 @@ typedef struct page_table_struct
 } page_table_t;
 
 page_directory_t *kernel_page_directory;
+page_table_t *kernel_page_tables;
 page_directory_t *current_page_directory;
 
 page_t *laddr2page(u32int addr, page_directory_t *pd);

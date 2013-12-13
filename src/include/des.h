@@ -14,8 +14,8 @@
 #ifndef __DES_H
 #define __DES_H
 
-#include "type.h"
-#include "asm/system.h"
+#include <type.h>
+#include <asm/system.h>
 
 struct gdt_entry_struct
 {
