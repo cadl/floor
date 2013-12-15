@@ -127,6 +127,7 @@ void monitor_put_hex(u32int n)
     while (remain)
     {
         i--;
+        digit[i] = '0' + remain %16;
         if (digit[i] > '9')
         {
             digit[i] = 'A' + (digit[i] - '9' - 1);
