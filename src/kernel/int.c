@@ -3,6 +3,7 @@
 #include <monitor.h>
 #include <pic.h>
 #include <timer.h>
+#include <page.h>
 
 
 void interrupt_handler(int in, registers_t *reg)
@@ -15,6 +16,9 @@ void interrupt_handler(int in, registers_t *reg)
 
     switch (in)
     {
+        case INT_PF:
+            pagefault_handler(in, reg);
+            break;
         case INT_IRQ0:
             timer_interrupt(in, reg);
             PIC_sendEOI(in-INT_IRQ0);

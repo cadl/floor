@@ -15,7 +15,8 @@ struct registers_struct
     u32int ds, es, fs, gs;
     u32int ebp, esi, edi, edx, ecx, ebx, eax;
     u32int int_no, err_code;
-    u32int eip, cs, eflags, esp, ss;
+    u32int eip, cs, eflags;
+    u32int esp, ss;
 } __attribute__((packed));
 
 typedef struct registers_struct registers_t;

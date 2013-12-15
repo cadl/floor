@@ -46,7 +46,9 @@ ISR_NOERRCODE       syscall_entry,  INT_SYSCALL
 .type interrupt_entry, @function
 
 interrupt_entry:
-    xchgl %eax, (%esp)        # pushl %eax movl (%esp), %eax
+    #xchgl %eax, (%esp)        # pushl %eax movl (%esp), %eax
+    pushl %eax
+    mov 4(%esp), %eax
     pushl %ebx
     pushl %ecx
     pushl %edx
@@ -83,6 +85,6 @@ interrupt_return:
     popl %ecx
     popl %ebx
     popl %eax
-    addl $4, %esp
+    addl $8, %esp
     sti
     iret

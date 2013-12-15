@@ -33,5 +33,6 @@ void alloc_page(page_t *page, int user, int rw);
 void free_page(page_t *page);
 void init_paging();
 void switch_page_directory(page_directory_t *pd);
+void pagefault_handler(int in, registers_t *reg);
 
 #endif

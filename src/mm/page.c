@@ -89,3 +89,19 @@ void switch_page_directory(page_directory_t *pd)
     __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));
     monitor_puts("cr\n");
 }
+
+void pagefault_handler(int in, registers_t *reg)
+{
+    u32int fault_addr;
+    int bit0, bit1, bit2, bit4;
+    __asm__ volatile ("mov %%cr2, %0": "=r" (fault_addr));
+    monitor_put_hex(fault_addr);
+    monitor_puts(" ---- addr\n");
+    monitor_put_hex(reg->err_code);
+    monitor_puts(" ---- err_code\n");
+    bit0 = reg->err_code & 0x1;
+    bit1 = reg->err_code & 0x2;
+    bit2 = reg->err_code & 0x4;
+    bit4 = reg->err_code & 0x10; 
+}
+
