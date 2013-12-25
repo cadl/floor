@@ -11,7 +11,7 @@
 // 0     0x7c00  0x8000   0x600000  0x1000000     0x2000000  
 
 void* kmalloc(u32int size);
-void memset(void* ptr, u8int val, u32int size);
+void init_frame();
 
 u32int frames[FRAMES_NUM];
 
@@ -56,5 +56,4 @@ static u32int get_free_frame_idx()
     return (u32int)-1;
 }
 
-void init_frame();
 #endif

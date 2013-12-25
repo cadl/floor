@@ -137,6 +137,7 @@ void monitor_put_hex(u32int n)
     digit[i-1] = 'x';
     digit[i-2] = '0';
     monitor_puts(digit+i-2);
+    monitor_putc('\n');
 }
 
 
@@ -156,4 +157,5 @@ void monitor_put_dec(u32int n)
         remain /= 10;
     }
     monitor_puts(digit+i);
+    monitor_putc('\n');
 }

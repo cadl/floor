@@ -30,20 +30,38 @@ static inline void lidt(u32int idt_ptr)
     __asm__ volatile ("lidt (%0)" :: "r"(idt_ptr));
 }
 
-static inline void cli(void)
+static inline void cli()
 {
     __asm__ volatile ("cli" ::);
 }
 
-static inline void sti(void)
+static inline void sti()
 {
     __asm__ volatile ("sti" ::);
 }
 
-static inline void io_wait(void)
+static inline void io_wait()
 {
     __asm__ volatile ("jmp 1f\n\t"
                       "1:jmp 2f\n\t"
                       "2:");
 }
+
+static inline void enable_paging()
+{
+    u32int cr0;
+    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0));
+    cr0 |= 0x80000000;
+    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));
+}
+
+static inline void disable_paging()
+{
+    u32int cr0;
+    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0));
+    cr0 &= 0x7fffffff;
+    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));
+
+}
+
 #endif

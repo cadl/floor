@@ -18,15 +18,6 @@ void* kmalloc(u32int size)
     return m_start;
 }
 
-void memset(void *ptr, u8int val, u32int size)
-{
-    int i;
-    for (i=0; i<size; i++)
-    {
-        *((u8int *)ptr + i) = val;
-    }
-}
-
 void init_frame()
 {
     int i;
