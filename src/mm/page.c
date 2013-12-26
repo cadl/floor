@@ -2,7 +2,32 @@
 #include <type.h>
 #include <memory.h>
 #include <monitor.h>
+#include <asm/system.h>
+#include <string.h>
 
+// switch pd, pf_handler
+void switch_page_directory(page_directory_t *pd)
+{
+    current_page_directory = pd;
+    __asm__ volatile ("mov %0, %%cr3":: "r"(pd));
+    enable_paging();
+}
+
+void pagefault_handler(int in, registers_t *reg)
+{
+    u32int fault_addr;
+    int p, rw, us;          // http://wiki.osdev.org/Paging#Page_Faults
+    __asm__ volatile ("mov %%cr2, %0": "=r" (fault_addr));
+    monitor_puts("addr\n");
+    monitor_put_hex(fault_addr);
+    monitor_puts("err_code\n");
+    monitor_put_hex(reg->err_code);
+    p = reg->err_code & 0x01;
+    rw = reg->err_code & 0x02;
+    us = reg->err_code & 0x04;
+}
+
+//  alloc_page, free_page 
 void alloc_page(page_t *page, int user, int rw)
 {
     if (!(page->present))
@@ -31,6 +56,7 @@ void free_page(page_t *page)
     }
 }
 
+// laddr2page: line address to page_t*
 page_t *laddr2page(u32int line_addr, page_directory_t *pd)
 {
     u32int pt_idx, pg_idx; 
@@ -38,19 +64,18 @@ page_t *laddr2page(u32int line_addr, page_directory_t *pd)
     pg_idx = line_addr / 0x1000 % 1024;
     if (pd->page_tables[pt_idx].present)
     {
-        return &((page_table_t *)((pd->page_tables[pt_idx]).frame*0x1000))->pages[pg_idx];
+        return &(((page_table_t *)frame2pointer(pd->page_tables[pt_idx].frame))->pages[pg_idx]);
     }
     else
     {
         monitor_put_hex(line_addr);
         monitor_putc('\n');
         alloc_page(&(pd->page_tables[pt_idx]), 1, 1);
-        monitor_puts("2page\n");
-        return &((page_table_t *)((pd->page_tables[pt_idx]).frame*0x1000))->pages[pg_idx];
-
+        return &(((page_table_t *)frame2pointer(pd->page_tables[pt_idx].frame))->pages[pg_idx]);
     }
 }
 
+// init_paging
 void init_paging()
 {
     int i, j;
@@ -79,29 +104,82 @@ void init_paging()
     switch_page_directory(kernel_page_directory);
 }
 
-void switch_page_directory(page_directory_t *pd)
+// clone page directory, copy_page table
+page_directory_t *clone_page_directory(page_directory_t *src_pd)
 {
-    u32int cr0;
-    current_page_directory = pd;
-    __asm__ volatile ("mov %0, %%cr3":: "r"(pd));
-    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0));
-    cr0 |= 0x80000000;
-    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));
-    monitor_puts("cr\n");
+    int i;
+    page_directory_t *dst_pd;
+    dst_pd = (page_directory_t *)kmalloc(sizeof(page_directory_t));
+    memset(dst_pd, 0, sizeof(page_directory_t));
+    for (i=0; i< 1024; i++)
+    {
+        if (!src_pd->page_tables[i].present)
+        {
+            continue;
+        }
+        if (src_pd->page_tables[i].frame == kernel_page_directory->page_tables[i].frame)
+        {
+            dst_pd->page_tables[i] = src_pd->page_tables[i];
+        }
+        else
+        {
+            copy_page(&(dst_pd->page_tables[i]), &(src_pd->page_tables[i]));
+            copy_pt(frame2pt(dst_pd->page_tables[i].frame), frame2pt(src_pd->page_tables[i].frame));
+        }
+    }
+    return dst_pd;
 }
 
-void pagefault_handler(int in, registers_t *reg)
+void copy_pt(page_table_t *dst_pt, page_table_t *src_pt)
 {
-    u32int fault_addr;
-    int bit0, bit1, bit2, bit4;
-    __asm__ volatile ("mov %%cr2, %0": "=r" (fault_addr));
-    monitor_put_hex(fault_addr);
-    monitor_puts(" ---- addr\n");
-    monitor_put_hex(reg->err_code);
-    monitor_puts(" ---- err_code\n");
-    bit0 = reg->err_code & 0x1;
-    bit1 = reg->err_code & 0x2;
-    bit2 = reg->err_code & 0x4;
-    bit4 = reg->err_code & 0x10; 
+    int i;
+    for (i=0; i<1024; i++)    
+    {
+        if (!src_pt->pages[i].present)
+        {
+            continue;
+        }
+        copy_page(&(dst_pt->pages[i]), &(src_pt->pages[i]));
+    }
 }
 
+// copy page, copy frame
+void copy_page(page_t *dst_page, page_t *src_page)
+{
+    u32int frame_idx = get_free_frame_idx();
+    if (frame_idx == (u32int)-1)
+    {
+        monitor_puts("no free frame\n");
+        return;
+    }
+    copy_frame(frame_idx, src_page->frame);
+    dst_page->rw = src_page->rw;
+    dst_page->user = src_page->user;
+    dst_page->accessed = src_page->accessed;
+    dst_page->dirty = src_page->dirty;
+    dst_page->unused = src_page->unused;
+    dst_page->frame = frame_idx;
+}
+
+void copy_frame(u32int dst_frame_idx, u32int src_frame_idx)
+{
+    u32int src, dst;
+    src = src_frame_idx * 0x1000;
+    dst = dst_frame_idx * 0x1000;
+    cli();
+    disable_paging();
+    memcpy((void *)dst, (void *)src, 512);  // 512 byte per frame
+    enable_paging();
+    sti();
+}
+
+// frame to page_table *, frame to page_directory *
+page_table_t *frame2pt(u32int frame_idx)
+{
+    return (page_table_t *)(frame_idx * 0x1000);
+}
+
+page_directory_t *frame2pd(u32int frame_idx)
+{
+    return (page_directory_t *)(frame_idx * 0x1000);
+}

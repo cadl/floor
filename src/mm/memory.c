@@ -27,3 +27,10 @@ void init_frame()
         clear_frame(i/0x1000);
     }
 }
+
+void *frame2pointer(u32int frame_idx)
+{
+    u32int addr;
+    addr = frame_idx * 0x1000;
+    return (void *)addr;
+}

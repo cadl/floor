@@ -56,4 +56,6 @@ static u32int get_free_frame_idx()
     return (u32int)-1;
 }
 
+void *frame2pointer(u32int frame_idx);
+
 #endif
