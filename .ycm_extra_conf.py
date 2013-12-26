@@ -38,6 +38,7 @@ flags = [
 '-Wall',
 '-Isrc/include',
 '-std=c99',
+'-m32'
 ]
 
 
