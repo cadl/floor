@@ -1,6 +1,6 @@
 megs: 32
 romimage: file=/usr/share/bochs/BIOS-bochs-latest
-vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+vgaromimage: file=/usr/share/bochs/vgabios-stdvga
 
 floppya: 1_44=sys.img, status=inserted
 

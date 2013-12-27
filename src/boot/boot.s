@@ -42,25 +42,29 @@ start_program:
     movw $0x800, %ax
     movw %ax, %es
     movb $2, %cl
+    movb $0x0, %ch
 
 read_loop:
     movb $0x02, %ah
-    movb $0x1, %al
-    movb $0x0, %ch
+    movb $30, %al
     movb $0x0, %dh
     movb $0, %dl
     int $0x13
     jc fail
-
-    movw %es, %ax
-    addw $0x20, %ax
-    movw %ax, %es
-    incb %cl
-    
-    cmpb $18, %cl
-    jbe read_loop
-    
     jmp os_entry
+
+read_disk_reg:
+    movb $18, %bl
+    div %bl
+    incb %dx
+    movb %ah, %cl   # disk shanqu cl
+    movb $0, %ah
+    movb $2, %bl
+    div %bl
+    movb %ah, %dh   # disk citou dh
+    movb %al, %ch    # disk zhumian ch
+    movb $1, %al    # disk shanqushu al
+    movb $2, %ah    # disk      ah
 
 os_entry:
     ljmp $OS_SEG, $OS_OFFSET
