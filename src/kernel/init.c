@@ -4,12 +4,20 @@
 #include <timer.h>
 #include <pic.h>
 #include <page.h>
+#include <monitor.h>
+#include <asm/system.h>
 
 void init()
 {
+    cli();
+    monitor_clear();
     init_gdt();
+    monitor_puts("init gdt over\n");
     init_idt();
+    monitor_puts("init idt over\n");
     PIC_remap();
     init_timer(500);
+    monitor_puts("init timer over\n");
     init_paging();
+    sti();
 }

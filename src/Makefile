@@ -1,7 +1,7 @@
 AS=as
 LD=ld
 OBJCOPY=objcopy
-CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32 -g -Wall
+CFLAGS=-nostdlib -nostdinc -fno-builtin -I../include -m32 -g -Wall -O0
 ASFLAGS= -I../include --32
 LDFLAGS=-m elf_i386
 CC=gcc

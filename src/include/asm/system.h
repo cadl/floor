@@ -64,4 +64,9 @@ static inline void disable_paging()
 
 }
 
+static inline void hlt()
+{
+    __asm__ volatile ("hlt" ::);
+}
+
 #endif

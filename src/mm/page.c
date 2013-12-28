@@ -25,6 +25,7 @@ void pagefault_handler(int in, registers_t *reg)
     p = reg->err_code & 0x01;
     rw = reg->err_code & 0x02;
     us = reg->err_code & 0x04;
+    panic("page fault\n");
 }
 
 //  alloc_page, free_page 
@@ -84,9 +85,10 @@ void init_paging()
     kernel_page_directory = (page_directory_t *)kmalloc(sizeof(page_directory_t));
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
     current_page_directory = kernel_page_directory;
-    kernel_page_tables = (page_table_t *)kmalloc(sizeof(page_table_t)*4);
-    memset(kernel_page_tables, 0, sizeof(page_table_t)*4);
-    for (i=0; i<4; i++)
+    monitor_put_dec(sizeof(page_table_t)*6);
+    kernel_page_tables = (page_table_t *)kmalloc(sizeof(page_table_t)*6);
+    memset(kernel_page_tables, 0, sizeof(page_table_t)*6);
+    for (i=0; i<6; i++)
     {
         for(j=0; j<1024; j++)
         {

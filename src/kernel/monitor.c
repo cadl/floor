@@ -159,3 +159,14 @@ void monitor_put_dec(u32int n)
     monitor_puts(digit+i);
     monitor_putc('\n');
 }
+
+
+void panic(char *s)
+{
+    cli();
+    monitor_puts(s);
+    while (1)
+    {
+        hlt();
+    }
+}
