@@ -88,7 +88,7 @@ void init_paging()
     monitor_put_dec(sizeof(page_table_t)*6);
     kernel_page_tables = (page_table_t *)kmalloc(sizeof(page_table_t)*6);
     memset(kernel_page_tables, 0, sizeof(page_table_t)*6);
-    for (i=0; i<6; i++)
+    for (i=0; i<5; i++)
     {
         for(j=0; j<1024; j++)
         {

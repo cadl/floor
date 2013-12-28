@@ -41,6 +41,7 @@ include:
 */
 
 .set    DA_32, 0x4000 /* 32-bit segment */
+.set    DA_G, 0x8000
 
 /* Descriptor privilege level */
 

@@ -6,8 +6,8 @@
 jmp LABEL_BEGIN
 
 LABEL_GDT:          Descriptor 0, 0, 0
-LABEL_DESC_CODE32:  Descriptor 0x0000, 0xffffffff, (DA_C + DA_32)
-LABEL_DESC_DATA:    Descriptor 0x0000, 0xffffffff, DA_DRW
+LABEL_DESC_CODE32:  Descriptor 0x0000, 0xffffffff, (DA_C + DA_32 + DA_G)
+LABEL_DESC_DATA:    Descriptor 0x0000, 0xffffffff, (DA_DRW + DA_G)
 LABEL_DESC_VIDEO:   Descriptor 0xB8000, 0xffff, DA_DRW 
 
 .set GdtLen, . - LABEL_GDT
@@ -22,6 +22,7 @@ GdtPtr:
 
 
 LABEL_BEGIN:
+    cli
     mov %cs, %ax
     mov %ax, %ds
     mov %ax, %ss
@@ -58,7 +59,7 @@ LABEL_SEG_CODE32:
     movb $'F', %al
     mov %ax, %gs:(%edi)
     
-    
+    pushl $0x42
     call kernel_start
     
     jmp .
