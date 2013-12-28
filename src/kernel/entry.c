@@ -5,7 +5,9 @@
 
 int kernel_start()
 {
+    char a[] = "hello\n";
     monitor_clear();
+    monitor_puts(a);
     init();
     __asm__ volatile ("int $3");
     monitor_puts("hello\n");

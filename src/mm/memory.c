@@ -1,6 +1,7 @@
 #include <memory.h>
 #include <type.h>
 #include <sys.h>
+#include <string.h>
 
 
 u32int placement_addr = (u32int)KMALLOC_START;

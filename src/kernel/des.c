@@ -3,6 +3,8 @@
 #include <int.h>
 #include <pic.h>
 #include <timer.h>
+#include <sys.h>
+#include <asm/system.h>
 
 gdt_entry_t gdt_entries[5];
 gdt_ptr_t gdt_ptr;
@@ -17,8 +19,9 @@ void init_gdt()
     gdt_set_gate(0, 0, 0, 0, 0);                    // NULL Segment
     gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);     // Code Segment
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);     // Data Segment
-    gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);     // user mode code Segment
-    gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);     // user mode data segment
+    gdt_set_gate(3, STACK_START, 0xFFFFFFFF, 0x92, 0xCF);     // Stack Segment
+    gdt_set_gate(4, 0, 0xFFFFFFFF, 0xFA, 0xCF);     // user mode code Segment
+    gdt_set_gate(5, 0, 0xFFFFFFFF, 0xF2, 0xCF);     // user mode data segment
 
     gdt_load((u32int)&gdt_ptr);
 }
@@ -65,6 +68,7 @@ void init_idt()
     idt_set_gate((u8int)INT_IRQ15, (u32int)irq15_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_SYSCALL, (u32int)syscall_entry, 0x08, 0x8E);
     lidt((u32int)(&idt_ptr));
+    sti();
 }
 
 void gdt_set_gate(s32int num, u32int base, u32int limit, u8int access, u8int gran)

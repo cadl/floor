@@ -14,7 +14,7 @@ include:
     .2byte  \Limit & 0xFFFF
     .2byte  \Base & 0xFFFF
     .byte   (\Base >> 16) & 0xFF
-    .2byte  ((\Limit >> 8) & 0xF00) | (\Attr & 0xF0FF)
+    .2byte  ((\Limit >> 8) & 0x0F00) | (\Attr & 0xF0FF)
     .byte   (\Base >> 24) & 0xFF
 .endm   
 
