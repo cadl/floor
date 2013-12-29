@@ -36,7 +36,7 @@ void alloc_page(page_t *page, int user, int rw)
         u32int frame_idx = get_free_frame_idx();
         if (frame_idx == (u32int)-1)
         {
-            monitor_puts("no free frame\n") ;
+            panic("no free frame\n") ;
             return;
         }
         mark_frame(frame_idx);
@@ -85,10 +85,9 @@ void init_paging()
     kernel_page_directory = (page_directory_t *)kmalloc(sizeof(page_directory_t));
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
     current_page_directory = kernel_page_directory;
-    monitor_put_dec(sizeof(page_table_t)*6);
     kernel_page_tables = (page_table_t *)kmalloc(sizeof(page_table_t)*6);
     memset(kernel_page_tables, 0, sizeof(page_table_t)*6);
-    for (i=0; i<5; i++)
+    for (i=0; i<6; i++)
     {
         for(j=0; j<1024; j++)
         {
@@ -102,6 +101,7 @@ void init_paging()
         kernel_page_directory->page_tables[i].present = 1;
         kernel_page_directory->page_tables[i].user = 1;
         kernel_page_directory->page_tables[i].rw = 1;
+        monitor_put_hex(start);
     }
     switch_page_directory(kernel_page_directory);
 }
@@ -113,18 +113,19 @@ page_directory_t *clone_page_directory(page_directory_t *src_pd)
     page_directory_t *dst_pd;
     dst_pd = (page_directory_t *)kmalloc(sizeof(page_directory_t));
     memset(dst_pd, 0, sizeof(page_directory_t));
-    for (i=0; i< 1024; i++)
+    for (i=0; i<4; i++)
     {
         if (!src_pd->page_tables[i].present)
         {
             continue;
         }
-        if (src_pd->page_tables[i].frame == kernel_page_directory->page_tables[i].frame)
+        dst_pd->page_tables[i] = src_pd->page_tables[i];
+    }
+    for (i=4; i<6; i++)
+    {
+         if (!src_pd->page_tables[i].present)
         {
-            dst_pd->page_tables[i] = src_pd->page_tables[i];
-        }
-        else
-        {
+            continue;
             copy_page(&(dst_pd->page_tables[i]), &(src_pd->page_tables[i]));
             copy_pt(frame2pt(dst_pd->page_tables[i].frame), frame2pt(src_pd->page_tables[i].frame));
         }
@@ -151,8 +152,7 @@ void copy_page(page_t *dst_page, page_t *src_page)
     u32int frame_idx = get_free_frame_idx();
     if (frame_idx == (u32int)-1)
     {
-        monitor_puts("no free frame\n");
-        return;
+        panic("no free frame\n");
     }
     copy_frame(frame_idx, src_page->frame);
     dst_page->rw = src_page->rw;

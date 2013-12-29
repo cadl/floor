@@ -4,6 +4,7 @@
 #include <asm/system.h>
 #include <pic.h>
 #include <int.h>
+#include <task.h>
 
 u32int tick = 0;
 
@@ -28,5 +29,10 @@ void timer_interrupt(int in, registers_t *preg)
     {
         monitor_puts("bee\n");
         tick = 0;
+    }
+    if (tick % 1000 == 0)
+    {
+        monitor_puts("switch !!\n");
+        task_switch();
     }
 }

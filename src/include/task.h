@@ -13,11 +13,15 @@ typedef struct task_struct
     struct task_struct *next;
 } task_t;
 
-extern void get_eip();
+extern u32int get_eip();
 void init_task();
 void task_switch();
- 
+
+
+u32int fork();
 
 task_t *current_task;
+task_t *tasks_head;
+u32int ntasks;
 
 #endif
