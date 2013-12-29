@@ -16,7 +16,7 @@ int kernel_start(u32int a)
     __asm__ volatile ("movl %0, %%esp":: "r"((u32int)STACK_TOP));
     monitor_puts("hi\n");
     
-    pid = fork();
+    /*pid = fork();
     if (pid == 0)
     {
         monitor_puts("in child process\n");
@@ -24,7 +24,7 @@ int kernel_start(u32int a)
     else
     {
         monitor_puts("in parent process\n");
-    }
+    }*/
 
     while (1)
     {

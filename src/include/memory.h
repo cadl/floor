@@ -39,7 +39,7 @@ static u32int test_frame(u32int frame_idx)
 static u32int get_free_frame_idx()
 {
     u32int i, j;
-    for (i=0; i<BITMAP_INDEX(FRAMES_NUM); i++)
+    for (i=0; i<FRAMES_NUM; i++)
     {
         if (frames[i] != 0xffffffff)
         {
