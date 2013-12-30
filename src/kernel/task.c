@@ -1,8 +1,9 @@
 #include <task.h>
 #include <type.h>
-#include <page.h>
 #include <memory.h>
 #include <monitor.h>
+#include <string.h>
+#include <page.h>
 #include <asm/system.h>
 
 
@@ -47,7 +48,7 @@ u32int fork()
         new_task->ebp = ebp;
         new_task->eip = eip;
         new_task->id = ntasks;
-        new_task->page_directory = clone_page_directory(current_page_directory);
+        new_task->page_directory = clone_directory(current_page_directory);
         ntasks++;
         sti();
         return new_task->id;

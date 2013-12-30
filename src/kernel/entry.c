@@ -13,7 +13,8 @@ int kernel_start(u32int a)
     monitor_put_hex(a);
     __asm__ volatile ("int $3");
     monitor_puts("hello\n");
-    __asm__ volatile ("movl %0, %%esp":: "r"((u32int)STACK_TOP));
+    monitor_put_hex(*((u32int *)1300000));
+    __asm__ volatile ("movl %0, %%esp":: "r"((u32int)STACK_ESP));
     monitor_puts("hi\n");
     
     /*pid = fork();

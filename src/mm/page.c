@@ -5,11 +5,53 @@
 #include <asm/system.h>
 #include <string.h>
 
-// switch pd, pf_handler
+
+void alloc_frame(page_t *page, int is_kernel, int is_writeable)
+{
+    u32int frame_idx;
+    if (!page->present)    
+    {
+        frame_idx = get_free_frame_idx();
+        mark_frame(frame_idx);
+        page->present = 1;
+        page->rw = (is_writeable == 1)?1:0;
+        page->user = (is_kernel == 1)?1:0;
+        page->frame = frame_idx;
+    }
+}
+
+page_t *get_page(u32int address, int make, page_directory_t *pd)
+{
+    address /= 0x1000;
+    u32int table_idx = address / 1024; 
+    if (pd->tables[table_idx])
+    {
+        return &pd->tables[table_idx]->pages[address%1024];
+    }
+    else if(make)
+    {
+        u32int frame_idx;
+        page_t *pg;
+        pd->tables[table_idx] = (page_table_t *)kmalloc_f(sizeof(page_table_t), &frame_idx);
+        memset(pd->tables[table_idx], 0, 0x1000);
+        pg = &pd->tables_physical[table_idx];
+        pg->frame = frame_idx;
+        pg->present = 1;
+        pg->rw = 1;
+        pg->user = 1;
+        return &pd->tables[table_idx]->pages[address%1024];
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
 void switch_page_directory(page_directory_t *pd)
 {
     current_page_directory = pd;
-    __asm__ volatile ("mov %0, %%cr3":: "r"(pd));
+    __asm__ volatile ("mov %0, %%cr3":: "r"(pd->phy_addr));
     enable_paging();
 }
 
@@ -28,160 +70,84 @@ void pagefault_handler(int in, registers_t *reg)
     panic("page fault\n");
 }
 
-//  alloc_page, free_page 
-void alloc_page(page_t *page, int user, int rw)
-{
-    if (!(page->present))
-    {
-        u32int frame_idx = get_free_frame_idx();
-        if (frame_idx == (u32int)-1)
-        {
-            panic("no free frame\n") ;
-            return;
-        }
-        mark_frame(frame_idx);
-        page->frame = frame_idx;
-        page->user = user;
-        page->rw = rw;
-        page->present = 1;
-    }
-}
 
-void free_page(page_t *page)
+page_directory_t *clone_directory(page_directory_t *src)
 {
     u32int frame_idx;
-    frame_idx = page->frame;
-    if (frame_idx)
+    int i;
+    page_directory_t *pd = (page_directory_t *)kmalloc_f(sizeof(page_directory_t), &frame_idx);
+    memset(pd, 0, sizeof(page_directory_t));
+    pd->phy_addr = (frame_idx + 1) * 0x1000;
+
+    for (i=0; i<1024; i++)
     {
-        clear_frame(frame_idx);
+        if (!src->tables)
+        {
+            continue; 
+        }
+        if (kernel_page_directory->tables[i] == src->tables[i])
+        {
+            pd->tables[i] = src->tables[i];
+            pd->tables_physical[i] = src->tables_physical[i];
+        }
+        else
+        {
+            u32int pt_frame_idx;
+            pd->tables[i] = clone_table(src->tables[i], &pt_frame_idx);
+            pd->tables_physical[i].frame = pt_frame_idx;
+            pd->tables_physical[i].present = 1;
+            pd->tables_physical[i].rw = 1;
+            pd->tables_physical[i].user = 1;
+        }
     }
+    return pd;    
 }
 
-// laddr2page: line address to page_t*
-page_t *laddr2page(u32int line_addr, page_directory_t *pd)
+page_table_t *clone_table(page_table_t *src, u32int *frame_idx)
 {
-    u32int pt_idx, pg_idx; 
-    pt_idx = line_addr / 0x1000 / 1024;
-    pg_idx = line_addr / 0x1000 % 1024;
-    if (pd->page_tables[pt_idx].present)
+    int i;
+    page_table_t *table = (page_table_t *)kmalloc_f(sizeof(page_table_t), frame_idx);
+    memset(table, 0, sizeof(page_table_t));
+    for (i=0; i<1024; i++)
     {
-        return &(((page_table_t *)frame2pointer(pd->page_tables[pt_idx].frame))->pages[pg_idx]);
+        if (!src->pages[i].frame)
+        {
+            continue;
+        }
+        alloc_frame(&table->pages[i], 0, 0);
+        table->pages[i].present = src->pages[i].present;
+        table->pages[i].rw = src->pages[i].rw;
+        table->pages[i].user = src->pages[i].user;
+        table->pages[i].accessed = src->pages[i].accessed;
+        table->pages[i].dirty = src->pages[i].dirty;
+        framecpy(table->pages[i].frame, src->pages[i].frame);
     }
-    else
-    {
-        monitor_put_hex(line_addr);
-        monitor_putc('\n');
-        alloc_page(&(pd->page_tables[pt_idx]), 1, 1);
-        return &(((page_table_t *)frame2pointer(pd->page_tables[pt_idx].frame))->pages[pg_idx]);
-    }
+    return table;
 }
 
-// init_paging
 void init_paging()
 {
-    int i, j;
-    u32int start=0;
-    init_frame(); 
-    kernel_page_directory = (page_directory_t *)kmalloc(sizeof(page_directory_t));
+    u32int frame_idx;
+    int i;
+    page_t *tmp_page;
+
+    kernel_page_directory = (page_directory_t *)kmalloc_f(sizeof(page_directory_t), &frame_idx);
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
-    current_page_directory = kernel_page_directory;
-    kernel_page_tables = (page_table_t *)kmalloc(sizeof(page_table_t)*6);
-    memset(kernel_page_tables, 0, sizeof(page_table_t)*6);
-    for (i=0; i<6; i++)
+    kernel_page_directory->phy_addr = (u32int)kernel_page_directory->tables_physical;
+
+    for (i=0; i<(u32int)KERNEL_END; i+=0x1000)
     {
-        for(j=0; j<1024; j++)
-        {
-            kernel_page_tables[i].pages[j].frame = start;
-            kernel_page_tables[i].pages[j].present = 1;
-            kernel_page_tables[i].pages[j].user = 1;
-            kernel_page_tables[i].pages[j].rw = 1;
-            start++;
-        }
-        kernel_page_directory->page_tables[i].frame = ((u32int)&(kernel_page_tables[i]))/0x1000;
-        kernel_page_directory->page_tables[i].present = 1;
-        kernel_page_directory->page_tables[i].user = 1;
-        kernel_page_directory->page_tables[i].rw = 1;
-        monitor_put_hex(start);
+        tmp_page = get_page(i, 1, kernel_page_directory);
+        tmp_page->present = 1;
+        tmp_page->user = 1;
+        tmp_page->rw = 1;
+        tmp_page->frame = i / 0x1000;
     }
     switch_page_directory(kernel_page_directory);
-}
-
-// clone page directory, copy_page table
-page_directory_t *clone_page_directory(page_directory_t *src_pd)
-{
-    int i;
-    page_directory_t *dst_pd;
-    dst_pd = (page_directory_t *)kmalloc(sizeof(page_directory_t));
-    memset(dst_pd, 0, sizeof(page_directory_t));
-    for (i=0; i<4; i++)
+    current_page_directory = clone_directory(kernel_page_directory);
+    for (i=(u32int)KERNEL_END; i<(u32int)STACK_TOP; i+=0x1000)
     {
-        if (!src_pd->page_tables[i].present)
-        {
-            continue;
-        }
-        dst_pd->page_tables[i] = src_pd->page_tables[i];
+        alloc_frame(get_page(i, 1, current_page_directory), 0, 0);
     }
-    for (i=4; i<6; i++)
-    {
-         if (!src_pd->page_tables[i].present)
-        {
-            continue;
-            copy_page(&(dst_pd->page_tables[i]), &(src_pd->page_tables[i]));
-            copy_pt(frame2pt(dst_pd->page_tables[i].frame), frame2pt(src_pd->page_tables[i].frame));
-        }
-    }
-    return dst_pd;
-}
-
-void copy_pt(page_table_t *dst_pt, page_table_t *src_pt)
-{
-    int i;
-    for (i=0; i<1024; i++)    
-    {
-        if (!src_pt->pages[i].present)
-        {
-            continue;
-        }
-        copy_page(&(dst_pt->pages[i]), &(src_pt->pages[i]));
-    }
-}
-
-// copy page, copy frame
-void copy_page(page_t *dst_page, page_t *src_page)
-{
-    u32int frame_idx = get_free_frame_idx();
-    if (frame_idx == (u32int)-1)
-    {
-        panic("no free frame\n");
-    }
-    copy_frame(frame_idx, src_page->frame);
-    dst_page->rw = src_page->rw;
-    dst_page->user = src_page->user;
-    dst_page->accessed = src_page->accessed;
-    dst_page->dirty = src_page->dirty;
-    dst_page->unused = src_page->unused;
-    dst_page->frame = frame_idx;
-}
-
-void copy_frame(u32int dst_frame_idx, u32int src_frame_idx)
-{
-    u32int src, dst;
-    src = src_frame_idx * 0x1000;
-    dst = dst_frame_idx * 0x1000;
-    cli();
-    disable_paging();
-    memcpy((void *)dst, (void *)src, 512);  // 512 byte per frame
-    enable_paging();
-    sti();
-}
-
-// frame to page_table *, frame to page_directory *
-page_table_t *frame2pt(u32int frame_idx)
-{
-    return (page_table_t *)(frame_idx * 0x1000);
-}
-
-page_directory_t *frame2pd(u32int frame_idx)
-{
-    return (page_directory_t *)(frame_idx * 0x1000);
+    switch_page_directory(current_page_directory);
 }
