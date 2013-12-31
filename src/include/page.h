@@ -4,6 +4,22 @@
 #include <type.h>
 #include <sys.h>
 
+#define enable_paging() \
+{\
+    u32int cr0;\
+    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0)::"%eax");\
+    cr0 |= 0x80000000;\
+    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0):"%eax");\
+}
+
+#define disable_paging() \
+{\
+    u32int cr0;\
+    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0));\
+    cr0 &= 0x7fffffff;\
+    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));\
+}
+
 typedef struct page_struct
 {
     u32int present:1;

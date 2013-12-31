@@ -5,6 +5,8 @@
 #include <string.h>
 #include <page.h>
 #include <asm/system.h>
+#include <int.h>
+#include <pic.h>
 
 
 void init_task()
@@ -40,8 +42,13 @@ u32int fork()
     tmp_task->next = new_task;
     new_task->next = tasks_head;
     eip = get_eip();
+    if (eip == 0x12345)
+    {
+        PIC_sendEOI(32-INT_IRQ0);
+    }
     if (current_task == parent_task)
     {
+        cli();
         __asm__ volatile ("mov %%esp, %0": "=r"(esp));
         __asm__ volatile ("mov %%ebp, %0": "=r"(ebp));
         new_task->esp = esp;
@@ -56,6 +63,7 @@ u32int fork()
     else
     {
         // in child process
+        sti();
         return 0;
     }
 }
@@ -66,15 +74,15 @@ void task_switch()
     u32int esp, ebp, eip;          
     page_directory_t *pd;
 
-    cli();
-    if (current_task && (current_task->next/*k = current_task*/))
+    monitor_puts("in task ");
+    monitor_put_dec(current_task->id);
+    if (current_task && (current_task->next != current_task))
     { 
         __asm__ volatile ("mov %%esp, %0": "=r"(esp));
         __asm__ volatile ("mov %%ebp, %0": "=r"(ebp));
         eip = get_eip();
         if (eip == 0x12345)
         {
-            sti();
             return;
         }
         current_task->esp = esp;
@@ -86,16 +94,19 @@ void task_switch()
         ebp = current_task->ebp;
         pd = current_task->page_directory;
         
-        switch_page_directory(pd);
-        __asm__ volatile("         \
-                cli;                 \
-                mov %0, %%ecx;       \
-                mov %1, %%esp;       \
-                mov %2, %%ebp;       \
-                mov $0x12345, %%eax; \
-                sti;                 \
-                jmp *%%ecx           "
-                : : "r"(eip), "r"(esp), "r"(ebp): "%ecx");
+        current_page_directory = pd;
+        __asm__ volatile("              \
+                cli;                    \
+                mov %0, %%ecx;          \
+                mov %1, %%esp;          \
+                mov %2, %%ebp;          \
+                mov %3, %%cr3;          \
+                mov %%cr0, %%eax;       \
+                orl $0x80000000, %%eax; \
+                mov %%eax, %%cr0;       \
+                mov $0x12345, %%eax;    \
+                sti;                    \
+                jmp *%%ecx;"
+                : : "r"(eip), "r"(esp), "r"(ebp), "r"(pd->phy_addr): "%ecx");
     }
-    sti();
 }

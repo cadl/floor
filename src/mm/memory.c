@@ -4,6 +4,7 @@
 #include <string.h>
 #include <monitor.h>
 #include <asm/system.h>
+#include <page.h>
 
 
 u32int placement_addr = (u32int)KMALLOC_START;
@@ -36,12 +37,7 @@ void *kmalloc_f(u32int size, u32int *frame_idx)
 }
 void init_frame()
 {
-    int i;
     memset(frames, 0x00, sizeof(u32int) * FRAME_BITMAP_NUM);
-    for (i=0; i<(u32int)KERNEL_END; i+=0x1000)
-    {
-        clear_frame(i/0x1000);
-    }
 }
 
 void *frame2pointer(u32int frame_idx)
@@ -56,11 +52,9 @@ void framecpy(u32int dst_frame_idx, u32int src_frame_idx)
     u32int src, dst;
     src = src_frame_idx * 0x1000;
     dst = dst_frame_idx * 0x1000;    
-    cli();
     disable_paging();
     memcpy((void *)dst, (void *)src, 0x1000);
     enable_paging();
-    sti();
 }
 
 void mark_frame(u32int frame_idx)

@@ -163,7 +163,6 @@ void monitor_put_dec(u32int n)
 
 void panic(char *s)
 {
-    cli();
     monitor_puts(s);
     while (1)
     {

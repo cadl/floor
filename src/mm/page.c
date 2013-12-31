@@ -81,7 +81,7 @@ page_directory_t *clone_directory(page_directory_t *src)
 
     for (i=0; i<1024; i++)
     {
-        if (!src->tables)
+        if (!src->tables[i])
         {
             continue; 
         }
@@ -110,7 +110,7 @@ page_table_t *clone_table(page_table_t *src, u32int *frame_idx)
     memset(table, 0, sizeof(page_table_t));
     for (i=0; i<1024; i++)
     {
-        if (!src->pages[i].frame)
+        if (!src->pages[i].present)
         {
             continue;
         }
@@ -131,6 +131,8 @@ void init_paging()
     int i;
     page_t *tmp_page;
 
+    init_frame();
+
     kernel_page_directory = (page_directory_t *)kmalloc_f(sizeof(page_directory_t), &frame_idx);
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
     kernel_page_directory->phy_addr = (u32int)kernel_page_directory->tables_physical;
@@ -142,12 +144,20 @@ void init_paging()
         tmp_page->user = 1;
         tmp_page->rw = 1;
         tmp_page->frame = i / 0x1000;
+        mark_frame(i/0x1000);
     }
+
     switch_page_directory(kernel_page_directory);
     current_page_directory = clone_directory(kernel_page_directory);
+
     for (i=(u32int)KERNEL_END; i<(u32int)STACK_TOP; i+=0x1000)
     {
-        alloc_frame(get_page(i, 1, current_page_directory), 0, 0);
+        tmp_page = get_page(i, 1, current_page_directory);
+        tmp_page->present = 1;
+        tmp_page->user = 0;
+        tmp_page->rw = 1;
+        tmp_page->frame = i / 0x1000;
+        mark_frame(i/0x1000);
     }
     switch_page_directory(current_page_directory);
 }

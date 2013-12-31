@@ -25,6 +25,7 @@ void init_timer(u32int frequency)
 void timer_interrupt(int in, registers_t *preg)
 {
     tick++;
+    //monitor_put_dec(tick);
     if (tick == (u32int)-1)
     {
         monitor_puts("bee\n");

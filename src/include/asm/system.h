@@ -47,12 +47,12 @@ static inline void io_wait()
                       "2:");
 }
 
-static inline void enable_paging()
+/*static inline void enable_paging()
 {
     u32int cr0;
-    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0));
+    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0)::"%eax");
     cr0 |= 0x80000000;
-    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));
+    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0):"%eax");
 }
 
 static inline void disable_paging()
@@ -62,7 +62,7 @@ static inline void disable_paging()
     cr0 &= 0x7fffffff;
     __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));
 
-}
+}*/
 
 static inline void hlt()
 {
