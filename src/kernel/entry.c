@@ -8,7 +8,7 @@
 
 int kernel_start(u32int a)
 {
-    u32int pid;
+    u32int pid, p;
     init();
     monitor_put_hex(a);
     monitor_puts("hello\n");
@@ -19,6 +19,21 @@ int kernel_start(u32int a)
 
     if (pid == 0)
     {
+        p = fork();
+        if (p == 0)
+        {
+            while (1)
+            {
+                monitor_puts("in grandson\n");
+            }
+        }
+        else
+        {
+            while (1)
+            {
+                monitor_puts("e e e\n");
+            }
+        }
         while (1)
         {
             monitor_puts("in child\n");

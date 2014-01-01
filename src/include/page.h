@@ -20,6 +20,16 @@
     __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));\
 }
 
+#define switch_page_directory(pd) \
+{\
+    current_page_directory = pd;\
+    __asm__ volatile ("mov %0, %%cr3":: "r"(pd->phy_addr));\
+    u32int cr0;\
+    __asm__ volatile ("mov %%cr0, %0": "=r"(cr0):);\
+    cr0 |= 0x80000000;\
+    __asm__ volatile ("mov %0, %%cr0":: "r"(cr0));\
+}
+
 typedef struct page_struct
 {
     u32int present:1;
@@ -50,7 +60,6 @@ page_directory_t *current_page_directory;
 void init_paging();
 void alloc_frame(page_t *page, int is_kernel, int is_writeable);
 
-void switch_page_directory(page_directory_t *pd);
 void pagefault_handler(int in, registers_t *reg);
 
 page_t *get_page(u32int address, int make, page_directory_t *pd);

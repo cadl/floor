@@ -72,7 +72,6 @@ u32int fork()
 void task_switch()
 {
     u32int esp, ebp, eip;          
-    page_directory_t *pd;
 
     monitor_puts("in task ");
     monitor_put_dec(current_task->id);
@@ -89,24 +88,18 @@ void task_switch()
         current_task->ebp = ebp;
         current_task->eip = eip;
         current_task = current_task->next;
-        eip = current_task->eip;
-        esp = current_task->esp;
-        ebp = current_task->ebp;
-        pd = current_task->page_directory;
-        
-        current_page_directory = pd;
+        switch_page_directory(current_task->page_directory);
+
         __asm__ volatile("              \
                 cli;                    \
                 mov %0, %%ecx;          \
                 mov %1, %%esp;          \
                 mov %2, %%ebp;          \
-                mov %3, %%cr3;          \
-                mov %%cr0, %%eax;       \
-                orl $0x80000000, %%eax; \
-                mov %%eax, %%cr0;       \
                 mov $0x12345, %%eax;    \
                 sti;                    \
                 jmp *%%ecx;"
-                : : "r"(eip), "r"(esp), "r"(ebp), "r"(pd->phy_addr): "%ecx");
+                : : "r"(current_task->eip),
+                "r"(current_task->esp),
+                "r"(current_task->ebp): "%ecx");
     }
 }

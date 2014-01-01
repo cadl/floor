@@ -47,14 +47,6 @@ page_t *get_page(u32int address, int make, page_directory_t *pd)
     }
 }
 
-
-void switch_page_directory(page_directory_t *pd)
-{
-    current_page_directory = pd;
-    __asm__ volatile ("mov %0, %%cr3":: "r"(pd->phy_addr));
-    enable_paging();
-}
-
 void pagefault_handler(int in, registers_t *reg)
 {
     u32int fault_addr;
