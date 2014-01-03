@@ -112,7 +112,8 @@ page_table_t *clone_table(page_table_t *src, u32int *frame_idx)
         table->pages[i].user = src->pages[i].user;
         table->pages[i].accessed = src->pages[i].accessed;
         table->pages[i].dirty = src->pages[i].dirty;
-        framecpy(table->pages[i].frame, src->pages[i].frame);
+        framecpy(table->pages[i].frame*0x1000, src->pages[i].frame*0x1000);
+
     }
     return table;
 }

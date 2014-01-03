@@ -22,28 +22,32 @@ int kernel_start(u32int a)
         p = fork();
         if (p == 0)
         {
+            monitor_puts("in grandson\n");
             while (1)
             {
-                monitor_puts("in grandson\n");
+                hlt();
             }
         }
         else
         {
+            monitor_puts("e e e\n");
             while (1)
             {
-                monitor_puts("e e e\n");
+                hlt();
             }
         }
+        monitor_puts("in child\n");
         while (1)
         {
-            monitor_puts("in child\n");
+            hlt();
         }
     }
     else
     {
+        monitor_puts("in parent\n");
         while (1)
         {
-            monitor_puts("in parent\n");
+            hlt();
         }
     }
 

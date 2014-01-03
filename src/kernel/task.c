@@ -73,8 +73,8 @@ void task_switch()
 {
     u32int esp, ebp, eip;          
 
-    monitor_puts("in task ");
-    monitor_put_dec(current_task->id);
+    //monitor_puts("in task ");
+    //monitor_put_dec(current_task->id);
     if (current_task && (current_task->next != current_task))
     { 
         __asm__ volatile ("mov %%esp, %0": "=r"(esp));

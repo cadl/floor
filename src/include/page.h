@@ -66,4 +66,6 @@ page_t *get_page(u32int address, int make, page_directory_t *pd);
 page_directory_t *clone_directory(page_directory_t *src);
 page_table_t *clone_table(page_table_t *src, u32int *frame_idx);
 
+extern void framecpy(int dst, int src);
+
 #endif

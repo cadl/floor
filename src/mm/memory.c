@@ -47,16 +47,6 @@ void *frame2pointer(u32int frame_idx)
     return (void *)addr;
 }
 
-void framecpy(u32int dst_frame_idx, u32int src_frame_idx)
-{
-    u32int src, dst;
-    src = src_frame_idx * 0x1000;
-    dst = dst_frame_idx * 0x1000;    
-    disable_paging();
-    memcpy((void *)dst, (void *)src, 0x1000);
-    enable_paging();
-}
-
 void mark_frame(u32int frame_idx)
 {
     u32int b_idx = BITMAP_INDEX(frame_idx);

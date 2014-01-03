@@ -4,6 +4,7 @@
 #include <pic.h>
 #include <timer.h>
 #include <page.h>
+#include <asm/system.h>
 
 
 void interrupt_handler(int in, registers_t *reg)
@@ -33,6 +34,7 @@ void interrupt_handler(int in, registers_t *reg)
             monitor_puts("recieved interrupt: ");
             monitor_put_dec(in);
             monitor_puts("\n");
+            hlt();
             break;
     }
 }

@@ -22,6 +22,5 @@ u32int test_frame(u32int frame_idx);
 u32int get_free_frame_idx();
 
 void *frame2pointer(u32int frame_idx);
-void framecpy(u32int dst_frame_idx, u32int src_frame_idx);
 
 #endif
