@@ -5,15 +5,16 @@
 #include <timer.h>
 #include <sys.h>
 #include <asm/system.h>
+#include <string.h>
 
-gdt_entry_t gdt_entries[5];
+gdt_entry_t gdt_entries[6];
 gdt_ptr_t gdt_ptr;
 idt_entry_t idt_entries[256];
 idt_ptr_t idt_ptr;
 
 void init_gdt()
 {
-    gdt_ptr.limit = (sizeof(gdt_entry_t)*5) - 1;
+    gdt_ptr.limit = (sizeof(gdt_entry_t)*6) - 1;
     gdt_ptr.base = (u32int)&gdt_entries;
 
     gdt_set_gate(0, 0, 0, 0, 0);                    // NULL Segment
@@ -21,10 +22,11 @@ void init_gdt()
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);     // Data Segment
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);     // user mode code Segment
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);     // user mode data segment
+    set_tss(5, 0x10, 0x0);
 
     gdt_load((u32int)&gdt_ptr);
+    tss_load(0x2B);
 }
-
 
 void init_idt()
 {
@@ -82,7 +84,6 @@ void gdt_set_gate(s32int num, u32int base, u32int limit, u8int access, u8int gra
     gdt_entries[num].access         = access;
 }
 
-
 void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags)
 {
     idt_entries[num].base_low = base & 0xFFFF;
@@ -90,4 +91,20 @@ void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags)
     idt_entries[num].selector = sel;
     idt_entries[num].always0 = 0;
     idt_entries[num].flags = flags;
+}
+
+void set_tss(u32int num, u16int ss0, u32int esp0)
+{
+    u32int base = (u32int)&core_tss;
+    u32int limit = base + sizeof(core_tss);
+    memset(&core_tss, 0, sizeof(core_tss));
+    gdt_set_gate(num, base, limit, 0xE9, 0x00);
+    core_tss.ss0 = ss0;
+    core_tss.esp0 = esp0;
+    core_tss.cs = 0x0b;     // kernel code segment selector
+    core_tss.ss = 0x13;     // kernel data segment selector
+    core_tss.ds = 0x13;
+    core_tss.es = 0x13;
+    core_tss.fs = 0x13;
+    core_tss.gs = 0x13;
 }

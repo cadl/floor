@@ -13,9 +13,12 @@ typedef struct task_struct
     struct task_struct *next;
 } task_t;
 
+typedef struct tss_entry_struct tss_entry_t;
+
 extern u32int get_eip();
 void init_task();
 void task_switch();
+void switch_to_user_mode(u32int addr);
 
 
 u32int fork();

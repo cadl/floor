@@ -4,18 +4,19 @@
 #include <sys.h>
 #include <asm/system.h>
 #include <task.h>
+#include <syscall.h>
 
 
 int kernel_start(u32int a)
 {
-    u32int pid, p;
+//    u32int pid, p;
     init();
     monitor_put_hex(a);
     monitor_puts("hello\n");
     __asm__ volatile ("movl %0, %%esp":: "r"((u32int)STACK_ESP));
     monitor_puts("hi\n");
 
-    pid = fork();
+/*    pid = fork();
 
     if (pid == 0)
     {
@@ -50,10 +51,11 @@ int kernel_start(u32int a)
             hlt();
         }
     }
-
+*/
+    syscall_monitor_puts("aaa\n");
+    syscall_monitor_puts("aaa\n");
     while (1)
     {
-        monitor_puts("hlt\n");
         hlt();
     }
     return 0x42;

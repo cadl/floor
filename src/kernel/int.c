@@ -5,6 +5,7 @@
 #include <timer.h>
 #include <page.h>
 #include <asm/system.h>
+#include <syscall.h>
 
 
 void interrupt_handler(int in, registers_t *reg)
@@ -29,6 +30,9 @@ void interrupt_handler(int in, registers_t *reg)
             break;
         case INT_IRQ15:
             spurious_irq_interrupt(in, reg);
+            break;
+        case INT_SYSCALL:
+            syscall_handler(in, reg);
             break;
         default:
             monitor_puts("recieved interrupt: ");

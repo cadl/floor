@@ -30,3 +30,21 @@ loop:
     popf
     pop %ebx
     ret
+
+.global gdt_load
+gdt_load:
+    movl 4(%esp), %eax
+    lgdtw (%eax)
+    movw $0x10, %ax     # selector of data segment
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
+    movw %ax, %ss
+    ret
+
+.global tss_load
+tss_load:
+    movl 4(%esp), %eax
+    ltr %ax
+    ret

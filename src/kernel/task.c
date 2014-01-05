@@ -103,3 +103,24 @@ void task_switch()
                 "r"(current_task->ebp): "%ecx");
     }
 }
+
+void switch_to_user_mode(u32int addr)
+{
+    __asm__ volatile("          \
+            cli;                \
+            mov $0x23, %%ax;    \
+            mov %%ax, %%ds;     \
+            mov %%ax, %%es;     \
+            mov %%ax, %%fs;     \
+            mov %%ax, %%gs;     \
+            mov %%esp, %%eax;   \
+            pushl $0x23;        \
+            pushl %%eax;        \
+            pushf;              \
+            pop %%eax;          \
+            orl %%eax, 0x200;   \
+            push %%eax;          \
+            pushl $0x1b;        \
+            pushl %0;           \
+            iret;":: "r"(addr));
+}

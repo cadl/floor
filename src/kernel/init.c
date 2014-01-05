@@ -6,6 +6,7 @@
 #include <page.h>
 #include <monitor.h>
 #include <task.h>
+#include <syscall.h>
 #include <asm/system.h>
 
 void init()
@@ -23,5 +24,6 @@ void init()
     monitor_puts("init timer over\n");
     init_task();
     monitor_puts("init task over\n");
+    init_syscall();
     sti();
 }
