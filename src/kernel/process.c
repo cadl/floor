@@ -3,8 +3,13 @@
 #include <memory.h>
 
 
-void init_process()
+void init_process0()
 {
+    // process0
+    // After some basic system initialization, system create the No.0 process, and switch to user mode from kernel mode. Every proccess fork from No.0.
+    // This function aims to create No.0 process.
+
+    // to do
     u32int i;
     page_t *tmp_page;
     current_page_directory = clone_directory(kernel_page_directory);
