@@ -9,7 +9,7 @@
 void alloc_frame(page_t *page, int is_kernel, int is_writeable)
 {
     u32int frame_idx;
-    if (!page->present)    
+    if (!page->present)
     {
         frame_idx = get_free_frame_idx();
         mark_frame(frame_idx);
@@ -23,7 +23,7 @@ void alloc_frame(page_t *page, int is_kernel, int is_writeable)
 page_t *get_page(u32int address, int make, page_directory_t *pd)
 {
     address /= 0x1000;
-    u32int table_idx = address / 1024; 
+    u32int table_idx = address / 1024;
     if (pd->tables[table_idx])
     {
         return &pd->tables[table_idx]->pages[address%1024];
@@ -75,7 +75,7 @@ page_directory_t *clone_directory(page_directory_t *src)
     {
         if (!src->tables[i])
         {
-            continue; 
+            continue;
         }
         if (kernel_page_directory->tables[i] == src->tables[i])
         {
@@ -92,7 +92,7 @@ page_directory_t *clone_directory(page_directory_t *src)
             pd->tables_physical[i].user = 1;
         }
     }
-    return pd;    
+    return pd;
 }
 
 page_table_t *clone_table(page_table_t *src, u32int *frame_idx)
@@ -121,7 +121,7 @@ page_table_t *clone_table(page_table_t *src, u32int *frame_idx)
 void init_paging()
 {
     u32int frame_idx;
-    int i;
+    u32int i;
     page_t *tmp_page;
 
     init_frame();
@@ -130,27 +130,23 @@ void init_paging()
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
     kernel_page_directory->phy_addr = (u32int)kernel_page_directory->tables_physical;
 
-    for (i=0; i<(u32int)KERNEL_END; i+=0x1000)
+    for (i=0; i<=(u32int)KERNEL_SPACE_END; i+=0x1000) // [KERNEL_SPACE_START, KERNEL_SPACE_END]
     {
         tmp_page = get_page(i, 1, kernel_page_directory);
         tmp_page->present = 1;
         tmp_page->user = 1;
         tmp_page->rw = 1;
         tmp_page->frame = i / 0x1000;
-        mark_frame(i/0x1000);
+    }
+
+    for (i=(u32int)CACHE_START; i<(u32int)CACHE_END; i+=0x1000)
+    {
+        tmp_page = get_page(i, 1, kernel_page_directory);
+        tmp_page->present = 1;
+        tmp_page->user = 1;
+        tmp_page->rw = 1;
+        tmp_page->frame = i / 0x1000;
     }
 
     switch_page_directory(kernel_page_directory);
-    current_page_directory = clone_directory(kernel_page_directory);
-
-    for (i=(u32int)KERNEL_END; i<(u32int)STACK_TOP; i+=0x1000)
-    {
-        tmp_page = get_page(i, 1, current_page_directory);
-        tmp_page->present = 1;
-        tmp_page->user = 0;
-        tmp_page->rw = 1;
-        tmp_page->frame = i / 0x1000;
-        mark_frame(i/0x1000);
-    }
-    switch_page_directory(current_page_directory);
 }

@@ -71,12 +71,12 @@ u32int fork()
 
 void task_switch()
 {
-    u32int esp, ebp, eip;          
+    u32int esp, ebp, eip;
 
     //monitor_puts("in task ");
     //monitor_put_dec(current_task->id);
     if (current_task && (current_task->next != current_task))
-    { 
+    {
         __asm__ volatile ("mov %%esp, %0": "=r"(esp));
         __asm__ volatile ("mov %%ebp, %0": "=r"(ebp));
         eip = get_eip();

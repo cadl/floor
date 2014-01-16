@@ -35,10 +35,10 @@ start_program:
     movw %ax, %es
     movw %ax, %ss
     xorw %sp, %sp
-    
+
     cld     #clear direction flag
     sti     #set interrupt flag
-    
+
     movw $0x800, %ax
     movw %ax, %es
     movb $2, %cl
@@ -52,19 +52,6 @@ read_loop:
     int $0x13
     jc fail
     jmp os_entry
-
-read_disk_reg:
-    movb $18, %bl
-    div %bl
-    incb %dx
-    movb %ah, %cl   # disk shanqu cl
-    movb $0, %ah
-    movb $2, %bl
-    div %bl
-    movb %ah, %dh   # disk citou dh
-    movb %al, %ch    # disk zhumian ch
-    movb $1, %al    # disk shanqushu al
-    movb $2, %ah    # disk      ah
 
 os_entry:
     ljmp $OS_SEG, $OS_OFFSET

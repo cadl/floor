@@ -12,6 +12,7 @@ gdt_ptr_t gdt_ptr;
 idt_entry_t idt_entries[256];
 idt_ptr_t idt_ptr;
 
+
 void init_gdt()
 {
     gdt_ptr.limit = (sizeof(gdt_entry_t)*6) - 1;
@@ -23,9 +24,8 @@ void init_gdt()
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);     // user mode code Segment
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);     // user mode data segment
     set_tss(5, 0x10, 0x0);
-
     gdt_load((u32int)&gdt_ptr);
-    tss_load(0x2B);
+    tss_load(CORE_TSS);
 }
 
 void init_idt()

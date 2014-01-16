@@ -14,7 +14,7 @@ void init_syscall()
 
 void syscall_handler(u32int in, registers_t *reg)
 {
-    if (reg->eax >= SYSCALL_NUM) 
+    if (reg->eax >= SYSCALL_NUM)
     {
         return;
     }

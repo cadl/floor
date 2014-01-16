@@ -7,7 +7,7 @@
 #include <page.h>
 
 
-u32int placement_addr = (u32int)KMALLOC_START;
+u32int placement_addr = (u32int)KERNEL_HEAP_START;
 
 void *kmalloc(u32int size)
 {
@@ -37,7 +37,20 @@ void *kmalloc_f(u32int size, u32int *frame_idx)
 }
 void init_frame()
 {
+    u32int i;
     memset(frames, 0x00, sizeof(u32int) * FRAME_BITMAP_NUM);
+
+    // kernel space
+    for (i=0; i<(u32int)KERNEL_SPACE_END; i+=0x1000)
+    {
+        mark_frame(i/0x1000);
+    }
+
+    // cache
+    for (i=(u32int)CACHE_START; i<(u32int)USER_SPACE_START; i+=0x1000)
+    {
+        mark_frame(i/0x1000);
+    }
 }
 
 void *frame2pointer(u32int frame_idx)
