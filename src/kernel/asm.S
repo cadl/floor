@@ -1,3 +1,5 @@
+#include <sys.h>
+
 .global get_eip
 get_eip:
     mov 0(%esp), %eax
@@ -45,6 +47,13 @@ gdt_load:
 
 .global tss_load
 tss_load:
-    movl 4(%esp), %eax
+    mov $(CORE_TSS), %ax
     ltr %ax
     ret
+
+.global process0_setup
+process0_setup:
+    movl %eax, %ebx
+    movl $(USER_STACK_TOP-0x100), %eax
+    movl %eax, %esp
+    jmp process0_start

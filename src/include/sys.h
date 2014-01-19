@@ -4,6 +4,7 @@
 #define TOTAL_MEM             0x10000000
 #define KMALLOC_SPACE_START   0x0
 
+#define KERNEL_SPACE_START    0x8000
 #define KERNEL_HEAP_START     0x100000
 #define KERNEL_HEAP_END       0x400000
 

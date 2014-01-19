@@ -12,7 +12,7 @@
 #define DECL_SYSCALL5(fn,p1,p2,p3,p4,p5)    int syscall_##fn(p1,p2,p3,p4,p5);
 
 #define DEF_SYSCALL0(fn, num)\
-int syscall_##fn()\
+int syscall_##fn()       \
 {\
     int a;\
     __asm__ volatile("int $0x30" : "=a" (a) : "0" (num));\

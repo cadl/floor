@@ -8,6 +8,7 @@
 #include <task.h>
 #include <syscall.h>
 #include <asm/system.h>
+#include <process.h>
 
 void init()
 {
@@ -25,5 +26,6 @@ void init()
     init_task();
     monitor_puts("init task over\n");
     init_syscall();
+    init_process0();
     sti();
 }

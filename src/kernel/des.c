@@ -23,9 +23,9 @@ void init_gdt()
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);     // Data Segment
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);     // user mode code Segment
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);     // user mode data segment
-    set_tss(5, 0x10, 0x0);
+    set_tss(5, 0x10, (u32int)KERNEL_STACK_TOP);
     gdt_load((u32int)&gdt_ptr);
-    tss_load(CORE_TSS);
+    tss_load();
 }
 
 void init_idt()
@@ -67,7 +67,7 @@ void init_idt()
     idt_set_gate((u8int)INT_IRQ13, (u32int)irq13_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_IRQ14, (u32int)irq14_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_IRQ15, (u32int)irq15_entry, 0x08, 0x8E);
-    idt_set_gate((u8int)INT_SYSCALL, (u32int)syscall_entry, 0x08, 0x8E);
+    idt_set_gate((u8int)INT_SYSCALL, (u32int)syscall_entry, 0x08, 0xEE);
     lidt((u32int)(&idt_ptr));
 }
 

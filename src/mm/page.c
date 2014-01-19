@@ -15,12 +15,12 @@ void alloc_frame(page_t *page, int is_kernel, int is_writeable)
         mark_frame(frame_idx);
         page->present = 1;
         page->rw = (is_writeable == 1)?1:0;
-        page->user = (is_kernel == 1)?1:0;
+        page->user = (is_kernel == 1)?0:1;
         page->frame = frame_idx;
     }
 }
 
-page_t *get_page(u32int address, int make, page_directory_t *pd)
+page_t *get_page(u32int address, int is_kernel, int make, page_directory_t *pd)
 {
     address /= 0x1000;
     u32int table_idx = address / 1024;
@@ -38,7 +38,7 @@ page_t *get_page(u32int address, int make, page_directory_t *pd)
         pg->frame = frame_idx;
         pg->present = 1;
         pg->rw = 1;
-        pg->user = 1;
+        pg->user = (is_kernel == 1)?0:1;
         return &pd->tables[table_idx]->pages[address%1024];
     }
     else
@@ -132,18 +132,18 @@ void init_paging()
 
     for (i=0; i<=(u32int)KERNEL_SPACE_END; i+=0x1000) // [KERNEL_SPACE_START, KERNEL_SPACE_END]
     {
-        tmp_page = get_page(i, 1, kernel_page_directory);
+        tmp_page = get_page(i, 1, 1, kernel_page_directory);
         tmp_page->present = 1;
-        tmp_page->user = 1;
+        tmp_page->user = 0;
         tmp_page->rw = 1;
         tmp_page->frame = i / 0x1000;
     }
 
     for (i=(u32int)CACHE_START; i<(u32int)CACHE_END; i+=0x1000)
     {
-        tmp_page = get_page(i, 1, kernel_page_directory);
+        tmp_page = get_page(i, 1, 1, kernel_page_directory);
         tmp_page->present = 1;
-        tmp_page->user = 1;
+        tmp_page->user = 0;
         tmp_page->rw = 1;
         tmp_page->frame = i / 0x1000;
     }

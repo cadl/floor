@@ -38,6 +38,7 @@ void interrupt_handler(int in, registers_t *reg)
             monitor_puts("recieved interrupt: ");
             monitor_put_dec(in);
             monitor_puts("\n");
+            monitor_put_hex(reg->err_code);
             hlt();
             break;
     }

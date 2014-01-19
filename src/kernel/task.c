@@ -104,7 +104,7 @@ void task_switch()
     }
 }
 
-void switch_to_user_mode(u32int addr)
+void switch_to_user_mode(u32int addr, u32int p0_addr)
 {
     __asm__ volatile("          \
             cli;                \
@@ -122,5 +122,6 @@ void switch_to_user_mode(u32int addr)
             push %%eax;          \
             pushl $0x1b;        \
             pushl %0;           \
-            iret;":: "r"(addr));
+            movl %0, %%eax;       \
+            iret;":: "r"(addr), "r"(p0_addr): "%eax");
 }

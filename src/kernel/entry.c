@@ -16,6 +16,8 @@ int kernel_start(u32int a)
     monitor_puts("hi\n");
 
     syscall_monitor_puts("aaa\n");
+    cli();
+    __asm__ volatile ("int $48"::);
     while (1)
     {
         hlt();

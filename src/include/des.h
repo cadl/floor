@@ -36,11 +36,11 @@ struct gdt_ptr_struct
 struct idt_entry_struct
 {
     u16int  base_low;           // the lower 16 bit of address
-    u16int  selector;           // kernel segment selector 
-    u8int   always0;            // this always be zero 
-    u8int   flags;              //  
-    u16int  base_high;          // the high 16 bit of address 
-} __attribute__((packed));  
+    u16int  selector;           // kernel segment selector
+    u8int   always0;            // this always be zero
+    u8int   flags;              //
+    u16int  base_high;          // the high 16 bit of address
+} __attribute__((packed));
 
 struct idt_ptr_struct
 {
@@ -94,6 +94,6 @@ void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags);
 void set_tss(u32int num, u16int ss0, u32int esp0);
 
 extern void gdt_load(u32int ptr);
-extern void tss_load(u32int sel);
+extern void tss_load();
 
 #endif
