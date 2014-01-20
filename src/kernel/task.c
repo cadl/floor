@@ -118,7 +118,7 @@ void switch_to_user_mode(u32int addr, u32int p0_addr)
             pushl %%eax;        \
             pushf;              \
             pop %%eax;          \
-            orl %%eax, 0x200;   \
+            or $0x200, %%eax;   \
             push %%eax;          \
             pushl $0x1b;        \
             pushl %0;           \

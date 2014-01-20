@@ -33,7 +33,7 @@ void timer_interrupt(int in, registers_t *preg)
     }
     if (tick % 1000 == 0)
     {
-        //monitor_puts("switch !!\n");
+        monitor_puts("switch !!\n");
         task_switch();
     }
 }
