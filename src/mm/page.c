@@ -92,6 +92,7 @@ page_directory_t *clone_directory(page_directory_t *src)
             pd->tables_physical[i].user = 1;
         }
     }
+
     return pd;
 }
 
@@ -130,7 +131,7 @@ void init_paging()
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
     kernel_page_directory->phy_addr = (u32int)kernel_page_directory->tables_physical;
 
-    for (i=0; i<=(u32int)KERNEL_SPACE_END; i+=0x1000) // [KERNEL_SPACE_START, KERNEL_SPACE_END]
+    for (i=0; i<(u32int)KERNEL_HEAP_END; i+=0x1000) // [KERNEL_SPACE_START, KERNEL_SPACE_END]
     {
         tmp_page = get_page(i, 1, 1, kernel_page_directory);
         tmp_page->present = 1;

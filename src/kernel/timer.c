@@ -31,9 +31,9 @@ void timer_interrupt(int in, registers_t *preg)
         monitor_puts("bee\n");
         tick = 0;
     }
-    if (tick % 1000 == 0)
+    if (tick % 100 == 0)
     {
-        monitor_puts("switch !!\n");
+        monitor_puts("switch\n");
         task_switch();
     }
 }

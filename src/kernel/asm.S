@@ -53,7 +53,6 @@ tss_load:
 
 .global process0_setup
 process0_setup:
-    movl %eax, %ebx
     movl $(USER_STACK_TOP-0x100), %eax
     movl %eax, %esp
     jmp process0_start

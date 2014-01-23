@@ -23,7 +23,7 @@ void init_gdt()
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);     // Data Segment
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);     // user mode code Segment
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);     // user mode data segment
-    set_tss(5, 0x10, (u32int)KERNEL_STACK_TOP);
+    set_tss(5, 0x10, (u32int)(KERNEL_STACK_TOP-0x100));
     gdt_load((u32int)&gdt_ptr);
     tss_load();
 }
@@ -40,12 +40,12 @@ void init_idt()
     idt_set_gate((u8int)INT_BR, (u32int)br_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_UD, (u32int)ud_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_NM, (u32int)nm_entry, 0x08, 0x8E);
-    idt_set_gate((u8int)INT_DF, (u32int)df_entry, 0x08, 0x8E);
+//    idt_set_gate((u8int)INT_DF, (u32int)df_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_CSO, (u32int)cso_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_TS, (u32int)ts_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_NP, (u32int)np_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_SS, (u32int)ss_entry, 0x08, 0x8E);
-    idt_set_gate((u8int)INT_GP, (u32int)gp_entry, 0x08, 0x8E);
+//    idt_set_gate((u8int)INT_GP, (u32int)gp_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_PF, (u32int)pf_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_MF, (u32int)mf_entry, 0x08, 0x8E);
     idt_set_gate((u8int)INT_AC, (u32int)ac_entry, 0x08, 0x8E);

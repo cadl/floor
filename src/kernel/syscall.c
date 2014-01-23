@@ -1,15 +1,15 @@
 #include <syscall.h>
 #include <monitor.h>
 #include <process.h>
+#include <task.h>
 
 void *syscalls[SYSCALL_NUM];
 
 void init_syscall()
 {
     syscalls[0] = monitor_puts;
-    syscalls[1] = monitor_put_hex;
-    syscalls[2] = monitor_put_dec;
-    syscalls[3] = fork;
+    syscalls[1] = process_fork;
+    syscalls[2] = pause;
 }
 
 void syscall_handler(u32int in, registers_t *reg)
@@ -28,11 +28,7 @@ void syscall_handler(u32int in, registers_t *reg)
             pushl %4;           \
             pushl %5;           \
             call *%6;           \
-            pop %%ebx;          \
-            pop %%ebx;          \
-            pop %%ebx;          \
-            pop %%ebx;          \
-            pop %%ebx;          \
+            addl $20, %%esp;    \
             " : "=a"(ret): "r"(reg->edi), "r"(reg->esi),
            "r"(reg->edx), "r"(reg->ecx), "r"(reg->ebx), "r"(func));
     reg->eax = ret;
@@ -40,3 +36,5 @@ void syscall_handler(u32int in, registers_t *reg)
 
 
 DEF_SYSCALL1(monitor_puts, 0, char*);
+DEF_SYSCALL0(fork, 1);
+DEF_SYSCALL0(pause, 2);

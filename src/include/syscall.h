@@ -65,8 +65,8 @@ void init_syscall();
 
 
 DECL_SYSCALL1(monitor_puts, char *);
-DECL_SYSCALL1(monitor_put_hex, int);
-DECL_SYSCALL1(monitor_put_dec, char *);
+DECL_SYSCALL0(fork);
+DECL_SYSCALL0(pause);
 
 
 

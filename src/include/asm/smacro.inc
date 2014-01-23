@@ -1,6 +1,6 @@
 /*
         macro for asm code
-        
+
 include:
     - Descriptor Base, Limit, Attr      define descriptor
     - InitDesc OffSet, GdtSegAddr       init descriptor in setup.S (pay attention to args)

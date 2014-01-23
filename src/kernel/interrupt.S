@@ -70,14 +70,14 @@ interrupt_entry:
     pushl %esp        /* Poiner of regs */
     pushl %eax        /* First argument of interrupt_handler */
     call interrupt_handler
-    addl $8, %esp
+    addl $8, %esp       // cleanup args of interrupt_handler
 
 
 interrupt_return:
     popl %ds
     popl %es
     popl %fs
-    popl %gs 
+    popl %gs
     popl %ebp
     popl %esi
     popl %edi
@@ -85,6 +85,6 @@ interrupt_return:
     popl %ecx
     popl %ebx
     popl %eax
-    addl $8, %esp
+    addl $8, %esp       // cleanup error code and interrupt num
     sti
     iret
