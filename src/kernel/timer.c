@@ -4,7 +4,7 @@
 #include <asm/system.h>
 #include <pic.h>
 #include <int.h>
-#include <task.h>
+#include <schedule.h>
 
 u32int tick = 0;
 
@@ -34,6 +34,6 @@ void timer_interrupt(int in, registers_t *preg)
     if (tick % 100 == 0)
     {
         monitor_puts("switch\n");
-        task_switch();
+        schedule();
     }
 }

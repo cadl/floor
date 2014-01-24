@@ -1,7 +1,7 @@
 #include <syscall.h>
 #include <monitor.h>
 #include <process.h>
-#include <task.h>
+#include <schedule.h>
 
 void *syscalls[SYSCALL_NUM];
 

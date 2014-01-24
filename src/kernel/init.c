@@ -5,8 +5,8 @@
 #include <pic.h>
 #include <page.h>
 #include <monitor.h>
-#include <task.h>
 #include <syscall.h>
+#include <schedule.h>
 #include <asm/system.h>
 #include <process.h>
 
@@ -23,8 +23,6 @@ void init()
     PIC_remap();
     init_timer(500);
     monitor_puts("init timer over\n");
-    init_task();
-    monitor_puts("init task over\n");
     init_syscall();
     init_process0();
     sti();

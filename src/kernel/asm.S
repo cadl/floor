@@ -1,10 +1,5 @@
 #include <sys.h>
 
-.global get_eip
-get_eip:
-    mov 0(%esp), %eax
-    ret
-
 .global framecpy
 framecpy:
     push %ebx

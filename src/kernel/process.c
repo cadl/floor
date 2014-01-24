@@ -2,12 +2,12 @@
 #include <page.h>
 #include <memory.h>
 #include <sys.h>
-#include <task.h>
 #include <syscall.h>
 #include <string.h>
 #include <pic.h>
 #include <int.h>
-#include <monitor.h>
+#include <schedule.h>
+#include <process.h>
 #include <asm/system.h>
 
 
@@ -62,8 +62,8 @@ void init_process0()
         tmp_page = get_page(i, 0, 1, current_page_directory);
         alloc_frame(tmp_page, 0, 1);
     }
+    init_task();
     switch_page_directory(current_page_directory);
-    monitor_put_hex((u32int)process0_setup + (u32int)USER_CODE_START - (u32int)KERNEL_SPACE_START);
     switch_to_user_mode((u32int)process0_setup + (u32int)USER_CODE_START - (u32int)KERNEL_SPACE_START);
 }
 
@@ -83,7 +83,10 @@ void process0_start()
         else
         {
             for (;;)
+            {
                 syscall_monitor_puts("child\n");
+//                syscall_pause();
+            }
         }
     }
     else
@@ -102,37 +105,29 @@ void process0_start()
 
 u32int process_fork()
 {
-    u32int eip;
-    task_t *new_task, *tmp_task, *parent_task;
+    u32int ret;
+    proc_t *new_task;
+    context_t *cxt;
     cli();
-    parent_task = current_task;
-    new_task = (task_t *)kmalloc(sizeof(task_t));
-    memset(new_task, 0, sizeof(task_t));
-    tmp_task = tasks_head;
-    while (tmp_task->next != tasks_head)
-    {
-        tmp_task = tmp_task->next;
-    }
-    tmp_task->next = new_task;
-    new_task->next = tasks_head;
-    __asm__ volatile ("mov %%esp, %0": "=r"(new_task->esp));
-    __asm__ volatile ("mov %%ebp, %0": "=r"(new_task->ebp));
-    __asm__ volatile ("mov %%esi, %0": "=r"(new_task->esi));
-    __asm__ volatile ("mov %%edi, %0": "=r"(new_task->edi));
-    eip = get_eip();
+    new_task = (proc_t *)kmalloc(sizeof(proc_t));
+    memset(new_task, 0, sizeof(proc_t));
 
-    if (current_task == parent_task)
+    task_list_append(&task_ready_list_head, new_task);
+
+    cxt = &(new_task->context);
+
+    ret = save_context(cxt);
+
+    if (ret != 0x19910611)
     {
-        new_task->eip = eip;
-        new_task->id = ntasks;
         new_task->page_directory = clone_directory(current_page_directory);
+        new_task->pid = ntasks;
         ntasks++;
-        return new_task->id;
+        return new_task->pid;
     }
     else
     {
         PIC_sendEOI(32-INT_IRQ0);
-        // in child process
         return 0;
     }
 }

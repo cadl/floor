@@ -3,7 +3,6 @@
 #include <init.h>
 #include <sys.h>
 #include <asm/system.h>
-#include <task.h>
 #include <syscall.h>
 
 
