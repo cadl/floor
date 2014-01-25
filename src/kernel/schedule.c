@@ -41,9 +41,10 @@ proc_t* task_list_remove(proc_t **list_head, proc_t *task)
         }
         if (task == *list_head)
         {
-            *list_head = tmp_task;
+            *list_head = task->next==*list_head? 0: tmp_task;
         }
         tmp_task->next = task->next;
+
         return task;
     }
     else
