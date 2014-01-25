@@ -27,7 +27,30 @@ void task_list_append(proc_t **list_head, proc_t *task)
 
 proc_t* task_list_remove(proc_t **list_head, proc_t *task)
 {
-    return 0;
+    proc_t *tmp_task = *list_head;
+    if (tmp_task)
+    {
+        while (tmp_task->next != task)
+        {
+            tmp_task = tmp_task->next;
+            if (tmp_task == *list_head)
+            {
+                // don't have this task
+                return 0;
+            }
+        }
+        if (task == *list_head)
+        {
+            *list_head = tmp_task;
+        }
+        tmp_task->next = task->next;
+        return task;
+    }
+    else
+    {
+        // the list is null
+        return 0;
+    }
 }
 
 void schedule()
