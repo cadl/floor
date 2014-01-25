@@ -24,8 +24,8 @@ context_switch:
         movl %edi, 24(%eax)
         movl %ebp, 28(%eax)
 
-        movl 0(%esp), %eax              // next_context pointer to %eax. why not 12(%esp)?  beacuse already run popl at line 4
-        movl 8(%esp), %ebx              // next task's page directory addr to %ebx
+        movl 0(%esp), %eax              // next_context pointer to %eax. why not 4(%esp)?  beacuse already run popl at line 4
+        movl 8(%esp), %ebx              // next task's page directory addr to %ebx.
 
         movl %ebx, %cr3                 // change page directory
         movl %cr0, %ebx
