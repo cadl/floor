@@ -5,6 +5,8 @@
 #include <asm/system.h>
 #include <string.h>
 
+page_directory_t *kernel_page_directory;
+page_directory_t *current_page_directory;
 
 void alloc_frame(page_t *page, int is_kernel, int is_writeable)
 {
@@ -49,16 +51,13 @@ page_t *get_page(u32int address, int is_kernel, int make, page_directory_t *pd)
 
 void pagefault_handler(int in, registers_t *reg)
 {
-    u32int fault_addr;
-    int p, rw, us;          // http://wiki.osdev.org/Paging#Page_Faults
+    u32int fault_addr;          // http://wiki.osdev.org/Paging#Page_Faults
     __asm__ volatile ("mov %%cr2, %0": "=r" (fault_addr));
+    monitor_put_hex(in);
     monitor_puts("addr\n");
     monitor_put_hex(fault_addr);
     monitor_puts("err_code\n");
     monitor_put_hex(reg->err_code);
-    p = reg->err_code & 0x01;
-    rw = reg->err_code & 0x02;
-    us = reg->err_code & 0x04;
     panic("page fault\n");
 }
 

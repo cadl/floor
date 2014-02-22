@@ -34,9 +34,6 @@
 // |-----------------------------------------------------------------------------------|-----------------------------------|------------|
 // 0                                                                           0x1000000                          0x4000000   0x10000000
 
-
-u32int frames[FRAME_BITMAP_NUM];
-
 void *kmalloc(u32int size);
 void *kmalloc_f(u32int size, u32int *frame_idx);
 void init_frame();
@@ -49,8 +46,3 @@ u32int get_free_frame_idx();
 void *frame2pointer(u32int frame_idx);
 
 #endif
-
-
-
-
-

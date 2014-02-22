@@ -8,6 +8,7 @@
 
 
 u32int placement_addr = (u32int)KERNEL_HEAP_START;
+u32int frames[FRAME_BITMAP_NUM];
 
 void *kmalloc(u32int size)
 {

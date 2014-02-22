@@ -4,8 +4,7 @@
 
 #include <process.h>
 
-u32int ntasks;
-
+extern u32int ntasks;
 
 proc_t *task_ready_list_head;
 proc_t *task_sleep_list_head;

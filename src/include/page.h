@@ -53,9 +53,8 @@ typedef struct page_directory_struct
     u32int phy_addr;
 } page_directory_t;
 
-
-page_directory_t *kernel_page_directory;
-page_directory_t *current_page_directory;
+extern page_directory_t *kernel_page_directory;
+extern page_directory_t *current_page_directory;
 
 void init_paging();
 void alloc_frame(page_t *page, int is_kernel, int is_writeable);

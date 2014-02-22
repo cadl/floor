@@ -4,6 +4,7 @@
 #include <schedule.h>
 
 void *syscalls[SYSCALL_NUM];
+u32int ntasks;
 
 void init_syscall()
 {

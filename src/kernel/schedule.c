@@ -57,17 +57,15 @@ proc_t* task_list_remove(proc_t **list_head, proc_t *task)
 void schedule()
 {
     proc_t *next_task, *prev_task;
-    u32int ret;
 
     next_task = current_task->next;
     prev_task = current_task;
 
-    monitor_put_hex(current_task->pid);
     if (next_task != current_task)
     {
         current_task = current_task->next;
         current_page_directory = current_task->page_directory;
-        ret = context_switch(&(next_task->context), &(prev_task->context), next_task->page_directory->phy_addr);
+        context_switch(&(next_task->context), &(prev_task->context), next_task->page_directory->phy_addr);
     }
 }
 
