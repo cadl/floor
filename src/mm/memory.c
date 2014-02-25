@@ -1,11 +1,8 @@
 #include <memory.h>
 #include <type.h>
 #include <sys.h>
-#include <string.h>
-#include <monitor.h>
-#include <asm/system.h>
-#include <page.h>
 #include <buddy.h>
+#include <monitor.h>
 
 static u32int placement_addr = (u32int)KERNEL_HEAP_START;
 static struct buddy_allocator *frame_allocator;
@@ -39,9 +36,6 @@ void *kmalloc_f(u32int size, u32int *frame_idx)
 void init_frame()
 {
     frame_allocator = buddy_new(TOTAL_MEM - USER_SPACE_START, 0x1000);
-    monitor_put_hex(frame_allocator->size);
-    monitor_put_hex(frame_allocator->block_size);
-    monitor_put_hex(frame_allocator->size/frame_allocator->block_size);
 }
 
 void *frame2pointer(u32int frame_idx)

@@ -2,7 +2,6 @@
 #include <type.h>
 #include <memory.h>
 #include <monitor.h>
-#include <asm/system.h>
 #include <string.h>
 
 page_directory_t *kernel_page_directory;

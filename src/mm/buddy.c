@@ -1,14 +1,8 @@
+#define ALLOC kmalloc
 #include <type.h>
 #include <buddy.h>
 #include <sys.h>
 #include <memory.h>
-#ifdef BUDDY_TEST
-#define ALLOC malloc
-#include <stdlib.h>
-#include <stdio.h>
-#else
-#define ALLOC kmalloc
-#endif
 
 struct buddy_allocator page_allocator;
 
