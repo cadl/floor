@@ -5,10 +5,10 @@
 #include <monitor.h>
 #include <asm/system.h>
 #include <page.h>
+#include <buddy.h>
 
-
-u32int placement_addr = (u32int)KERNEL_HEAP_START;
-u32int frames[FRAME_BITMAP_NUM];
+static u32int placement_addr = (u32int)KERNEL_HEAP_START;
+static struct buddy_alloctor *frame_alloctor;
 
 void *kmalloc(u32int size)
 {
@@ -38,20 +38,10 @@ void *kmalloc_f(u32int size, u32int *frame_idx)
 }
 void init_frame()
 {
-    u32int i;
-    memset(frames, 0x00, sizeof(u32int) * FRAME_BITMAP_NUM);
-
-    // kernel space
-    for (i=0; i<(u32int)KERNEL_SPACE_END; i+=0x1000)
-    {
-        mark_frame(i/0x1000);
-    }
-
-    // cache
-    for (i=(u32int)CACHE_START; i<(u32int)USER_SPACE_START; i+=0x1000)
-    {
-        mark_frame(i/0x1000);
-    }
+    frame_alloctor = buddy_new(TOTAL_MEM - USER_SPACE_START, 0x1000);
+    monitor_put_hex(frame_alloctor->size);
+    monitor_put_hex(frame_alloctor->block_size);
+    monitor_put_hex(frame_alloctor->size/frame_alloctor->block_size);
 }
 
 void *frame2pointer(u32int frame_idx)
@@ -61,44 +51,11 @@ void *frame2pointer(u32int frame_idx)
     return (void *)addr;
 }
 
-void mark_frame(u32int frame_idx)
+s32int get_free_frames(u32int n)
 {
-    u32int b_idx = BITMAP_INDEX(frame_idx);
-    u32int b_offset = BITMAP_OFFSET(frame_idx);
-    frames[b_idx] |= (0x1 << b_offset);
-}
-
-void clear_frame(u32int frame_idx)
-{
-    u32int b_idx = BITMAP_INDEX(frame_idx);
-    u32int b_offset = BITMAP_OFFSET(frame_idx);
-    frames[b_idx] &= ~(0x1 << b_offset);
-}
-
-u32int test_frame(u32int frame_idx)
-{
-    u32int b_idx = BITMAP_INDEX(frame_idx);
-    u32int b_offset = BITMAP_OFFSET(frame_idx);
-    return (frames[b_idx] & (0x1 << b_offset));
-}
-
-u32int get_free_frame_idx()
-{
-    u32int i, j;
-    for (i=0; i<FRAME_BITMAP_NUM; i++)
-    {
-        if (frames[i] != 0xffffffff)
-        {
-            for (j=0; j<32; j++)
-            {
-                u32int b = 0x1 << j;
-                if (!(frames[i]&b))
-                {
-                    return i*32+j;
-                }
-            }
-        }
-    }
-    panic("no free frame\n");
-    return (u32int)-1;
+    s32int idx;
+    idx = buddy_malloc(frame_alloctor, n * 0x1000);
+    if (idx == -1)
+        panic("no free frame\n");
+    return idx / 0x1000 + USER_SPACE_START / 0x1000;
 }

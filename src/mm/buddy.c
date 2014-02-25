@@ -108,7 +108,7 @@ struct buddy_alloctor* buddy_new(u32int size, u32int block_size)
     return alloctor;
 }
 
-u32int buddy_malloc(struct buddy_alloctor* alloctor, u32int size)
+s32int buddy_malloc(struct buddy_alloctor* alloctor, u32int size)
 {
     u32int i, length, node_num;
     s8int power, root_power;

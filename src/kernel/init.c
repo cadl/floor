@@ -24,6 +24,8 @@ void init()
     init_timer(500);
     monitor_puts("init timer over\n");
     init_syscall();
+    monitor_puts("init syscall over\n");
     init_process0();
+    monitor_puts("init process0 over\n");
     sti();
 }

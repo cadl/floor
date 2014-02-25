@@ -8,13 +8,12 @@
 page_directory_t *kernel_page_directory;
 page_directory_t *current_page_directory;
 
-void alloc_frame(page_t *page, int is_kernel, int is_writeable)
+void page_alloc(page_t *page, int is_kernel, int is_writeable)
 {
     u32int frame_idx;
     if (!page->present)
     {
-        frame_idx = get_free_frame_idx();
-        mark_frame(frame_idx);
+        frame_idx = get_free_frames(1);
         page->present = 1;
         page->rw = (is_writeable == 1)?1:0;
         page->user = (is_kernel == 1)?0:1;
@@ -22,7 +21,7 @@ void alloc_frame(page_t *page, int is_kernel, int is_writeable)
     }
 }
 
-page_t *get_page(u32int address, int is_kernel, int make, page_directory_t *pd)
+page_t *addr2page(u32int address, int is_kernel, int make, page_directory_t *pd)
 {
     address /= 0x1000;
     u32int table_idx = address / 1024;
@@ -43,10 +42,7 @@ page_t *get_page(u32int address, int is_kernel, int make, page_directory_t *pd)
         pg->user = (is_kernel == 1)?0:1;
         return &pd->tables[table_idx]->pages[address%1024];
     }
-    else
-    {
-        return 0;
-    }
+    return 0;
 }
 
 void pagefault_handler(int in, registers_t *reg)
@@ -91,7 +87,6 @@ page_directory_t *clone_directory(page_directory_t *src)
             pd->tables_physical[i].user = 1;
         }
     }
-
     return pd;
 }
 
@@ -106,7 +101,7 @@ page_table_t *clone_table(page_table_t *src, u32int *frame_idx)
         {
             continue;
         }
-        alloc_frame(&table->pages[i], 0, 0);
+        page_alloc(&table->pages[i], 0, 0);
         table->pages[i].present = src->pages[i].present;
         table->pages[i].rw = src->pages[i].rw;
         table->pages[i].user = src->pages[i].user;
@@ -126,13 +121,14 @@ void init_paging()
 
     init_frame();
 
-    kernel_page_directory = (page_directory_t *)kmalloc_f(sizeof(page_directory_t), &frame_idx);
+    kernel_page_directory = (page_directory_t *)kmalloc_f(sizeof(page_directory_t),
+                                                          &frame_idx);
     memset(kernel_page_directory, 0, sizeof(page_directory_t));
     kernel_page_directory->phy_addr = (u32int)kernel_page_directory->tables_physical;
 
     for (i=0; i<(u32int)KERNEL_HEAP_END; i+=0x1000) // [KERNEL_SPACE_START, KERNEL_SPACE_END]
     {
-        tmp_page = get_page(i, 1, 1, kernel_page_directory);
+        tmp_page = addr2page(i, 1, 1, kernel_page_directory);
         tmp_page->present = 1;
         tmp_page->user = 0;
         tmp_page->rw = 1;
@@ -141,12 +137,11 @@ void init_paging()
 
     for (i=(u32int)CACHE_START; i<(u32int)CACHE_END; i+=0x1000)
     {
-        tmp_page = get_page(i, 1, 1, kernel_page_directory);
+        tmp_page = addr2page(i, 1, 1, kernel_page_directory);
         tmp_page->present = 1;
         tmp_page->user = 0;
         tmp_page->rw = 1;
         tmp_page->frame = i / 0x1000;
     }
-
     switch_page_directory(kernel_page_directory);
 }

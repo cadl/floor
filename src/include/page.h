@@ -57,11 +57,11 @@ extern page_directory_t *kernel_page_directory;
 extern page_directory_t *current_page_directory;
 
 void init_paging();
-void alloc_frame(page_t *page, int is_kernel, int is_writeable);
+void page_alloc(page_t *page, int is_kernel, int is_writeable);
 
 void pagefault_handler(int in, registers_t *reg);
 
-page_t *get_page(u32int address, int is_kernel, int make, page_directory_t *pd);
+page_t *addr2page(u32int address, int is_kernel, int make, page_directory_t *pd);
 page_directory_t *clone_directory(page_directory_t *src);
 page_table_t *clone_table(page_table_t *src, u32int *frame_idx);
 

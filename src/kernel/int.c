@@ -13,6 +13,7 @@ void interrupt_handler(int in, registers_t *reg)
     if (in < 0 || in > INT_MAXN)
     {
         monitor_puts("unrecognized interruptnumber\n");
+        panic("eee\n");
         return;
     }
 

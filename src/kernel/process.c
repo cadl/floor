@@ -8,6 +8,7 @@
 #include <int.h>
 #include <schedule.h>
 #include <process.h>
+#include <monitor.h>
 #include <asm/system.h>
 
 
@@ -43,10 +44,12 @@ void init_process0()
     cli();
     current_page_directory = clone_directory(kernel_page_directory);
 
-    for (i=(u32int)KERNEL_SPACE_START, j=(u32int)USER_CODE_START; i<(u32int)KERNEL_HEAP_END; i+=0x1000, j+=0x1000)
+    for (i=(u32int)KERNEL_SPACE_START, j=(u32int)USER_CODE_START;
+         i<(u32int)KERNEL_HEAP_END;
+         i+=0x1000, j+=0x1000)
     {
-        kernel_code_page = get_page(i, 1, 0, kernel_page_directory);
-        user_code_page = get_page(j, 0, 1, current_page_directory);
+        kernel_code_page = addr2page(i, 1, 0, kernel_page_directory);
+        user_code_page = addr2page(j, 0, 1, current_page_directory);
         user_code_page->present = 1;
         user_code_page->frame = kernel_code_page->frame;
         user_code_page->rw = 1;
@@ -54,15 +57,16 @@ void init_process0()
     }
     for (i=(u32int)KERNEL_STACK_BOTTOM; i<(u32int)KERNEL_STACK_TOP; i+=0x1000)
     {
-        tmp_page = get_page(i, 1, 1, current_page_directory);
-        alloc_frame(tmp_page, 1, 1);
+        tmp_page = addr2page(i, 1, 1, current_page_directory);
+        page_alloc(tmp_page, 1, 1);
     }
     for (i=(u32int)USER_STACK_BOTTOM; i<(u32int)USER_STACK_TOP; i+=0x1000)
     {
-        tmp_page = get_page(i, 0, 1, current_page_directory);
-        alloc_frame(tmp_page, 0, 1);
+        tmp_page = addr2page(i, 0, 1, current_page_directory);
+        page_alloc(tmp_page, 0, 1);
     }
     init_task();
+    monitor_puts("init task over\n");
     switch_page_directory(current_page_directory);
     switch_to_user_mode((u32int)process0_setup + (u32int)USER_CODE_START - (u32int)KERNEL_SPACE_START);
 }
