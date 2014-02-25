@@ -8,7 +8,7 @@
 #include <buddy.h>
 
 static u32int placement_addr = (u32int)KERNEL_HEAP_START;
-static struct buddy_alloctor *frame_alloctor;
+static struct buddy_allocator *frame_allocator;
 
 void *kmalloc(u32int size)
 {
@@ -38,10 +38,10 @@ void *kmalloc_f(u32int size, u32int *frame_idx)
 }
 void init_frame()
 {
-    frame_alloctor = buddy_new(TOTAL_MEM - USER_SPACE_START, 0x1000);
-    monitor_put_hex(frame_alloctor->size);
-    monitor_put_hex(frame_alloctor->block_size);
-    monitor_put_hex(frame_alloctor->size/frame_alloctor->block_size);
+    frame_allocator = buddy_new(TOTAL_MEM - USER_SPACE_START, 0x1000);
+    monitor_put_hex(frame_allocator->size);
+    monitor_put_hex(frame_allocator->block_size);
+    monitor_put_hex(frame_allocator->size/frame_allocator->block_size);
 }
 
 void *frame2pointer(u32int frame_idx)
@@ -54,7 +54,7 @@ void *frame2pointer(u32int frame_idx)
 s32int get_free_frames(u32int n)
 {
     s32int idx;
-    idx = buddy_malloc(frame_alloctor, n * 0x1000);
+    idx = buddy_malloc(frame_allocator, n * 0x1000);
     if (idx == -1)
         panic("no free frame\n");
     return idx / 0x1000 + USER_SPACE_START / 0x1000;
