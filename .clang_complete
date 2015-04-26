@@ -1,0 +1,4 @@
+-DDEBUG
+-Isrc/include
+-m32
+-Wall
