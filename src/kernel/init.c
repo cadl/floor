@@ -14,6 +14,7 @@ void init()
 {
     cli();
     monitor_clear();
+    welcome();
     init_gdt();
     monitor_puts("init gdt over\n");
     init_idt();
@@ -28,4 +29,19 @@ void init()
     init_process0();
     monitor_puts("init process0 over\n");
     sti();
+}
+
+void welcome()
+{
+    monitor_puts("+==========================================================+\n");
+    monitor_puts("|                     _____       _____                    |\n");
+    monitor_puts("|                    |  _  |     |  _  |                   |\n");
+    monitor_puts("|                    |_| |_|     |_| |_|                   |\n");
+    monitor_puts("|                                                          |\n");
+    monitor_puts("|                           _____                          |\n");
+    monitor_puts("|                          |_____|                         |\n");
+    monitor_puts("|                                                          |\n");
+    monitor_puts("+==========================================================+\n");
+    monitor_puts("\t\t\t\t\t\t     BY CADL\n");
+    monitor_puts("\n\n\n");
 }

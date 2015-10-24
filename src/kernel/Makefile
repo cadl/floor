@@ -8,4 +8,4 @@ kernel.o:$(OBJS)
 	$(CC) $(CFLAGS) $< -c -o $@
 
 %.o:%.S
-	$(CC) $(CFLAGS) -D__ASM__ $< -c -o $@ 
+	$(CC) $(CFLAGS) -D__ASM__ $< -c -o $@

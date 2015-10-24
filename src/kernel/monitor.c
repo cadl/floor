@@ -56,7 +56,8 @@ void monitor_putc(char c)
             }
             break;
         case '\t':
-            cursor_x = (cursor_x + 8) & (8 - 1);
+            cursor_y += (cursor_x + 8) / 80;
+            cursor_x = (cursor_x + 8) % 80;
             break;
         case '\r':
             cursor_x = 0;

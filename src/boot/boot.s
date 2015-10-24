@@ -72,7 +72,7 @@ fail:
     int $0x10
     jmp end
 
-err_msg: .ascii "read sector failed" 
+err_msg: .ascii "read sector failed"
 .set err_msg_len, . - err_msg
 
 .org 510
