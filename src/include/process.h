@@ -7,6 +7,7 @@
 void switch_to_user_mode(u32int addr);
 void init_process0();
 void process0_start();
+void fake_shell();
 extern void process0_setup();
 u32int process_fork();
 

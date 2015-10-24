@@ -76,33 +76,22 @@ void process0_start()
     u32int pid;
     syscall_monitor_puts("hello user mode\n");
     pid = syscall_fork();
+
     if (pid == 0)
     {
-        u32int ppid = syscall_fork();
-        if (ppid == 0)
-        {
-            for (;;)
-                syscall_monitor_puts("grand child\n");
-        }
-        else
-        {
-            for (;;)
-            {
-                syscall_monitor_puts("child\n");
-//                syscall_pause();
-            }
-        }
-    }
-    else
-    {
-        for (;;)
-        {
-            syscall_monitor_puts("parent\n");
-//            syscall_pause();
-        }
+        fake_shell();
     }
     for (;;)
     {
+        syscall_pause();
+    }
+}
+
+
+void fake_shell()
+{
+    syscall_monitor_puts("$>");
+    for (;;) {
         syscall_pause();
     }
 }

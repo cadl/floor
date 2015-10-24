@@ -22,6 +22,8 @@ void init_timer(u32int frequency)
     unmask_irq(IRQ_TIMER);
 
 }
+
+
 void timer_interrupt(int in, registers_t *preg)
 {
     tick++;
@@ -33,7 +35,6 @@ void timer_interrupt(int in, registers_t *preg)
     }
     if (tick % 100 == 0)
     {
-        monitor_puts("switch\n");
         schedule();
     }
 }

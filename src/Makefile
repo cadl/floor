@@ -35,6 +35,9 @@ sys.img:boot/boot.bin kernel.bin
 bochs-run: all
 	bochs -f bochsrc
 
+qemu-run: all
+	qemu-system-i386 -fda sys.img -s -S
+
 clean:
 	rm -f kernel/*.o mm/*.o
 	rm -f sys.img kernel.bin kernel.elf
