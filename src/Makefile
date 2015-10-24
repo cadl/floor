@@ -32,6 +32,9 @@ sys.img:boot/boot.bin kernel.bin
 	cat kernel.bin >> boot/boot.bin
 	dd if=boot/boot.bin of=sys.img bs=512
 
+bochs-run: all
+	bochs -f bochsrc
+
 clean:
 	rm -f kernel/*.o mm/*.o
 	rm -f sys.img kernel.bin kernel.elf

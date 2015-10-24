@@ -1,9 +1,0 @@
-megs: 256
-romimage: file=/usr/share/bochs/BIOS-bochs-latest
-
-floppya: 1_44=sys.img, status=inserted
-
-boot: floppy
-
-debug: action=ignore, pic=report, XGUI=ignore
-log: bochsout.txt
