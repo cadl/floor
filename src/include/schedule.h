@@ -19,5 +19,6 @@ u32int pause();
 
 extern u32int context_switch(context_t *next_context, context_t *prev_context, u32int pd_phyaddr);
 extern u32int save_context(context_t *cxt);
-
+void sleep_on(proc_t **p);
+void wake_up(proc_t **p);
 #endif

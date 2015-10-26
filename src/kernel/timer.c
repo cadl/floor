@@ -33,7 +33,7 @@ void timer_interrupt(int in, registers_t *preg)
         monitor_puts("bee\n");
         tick = 0;
     }
-    if (tick % 100 == 0)
+    if (tick % 100000 == 0)
     {
         schedule();
     }

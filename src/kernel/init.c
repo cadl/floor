@@ -2,32 +2,35 @@
 #include <type.h>
 #include <des.h>
 #include <timer.h>
+#include <keyboard.h>
 #include <pic.h>
 #include <page.h>
 #include <monitor.h>
 #include <syscall.h>
 #include <schedule.h>
-#include <asm/system.h>
 #include <process.h>
+#include <asm/system.h>
 
 void init()
 {
     cli();
     monitor_clear();
     welcome();
+    monitor_puts("INIT GDT... \n");
     init_gdt();
-    monitor_puts("init gdt over\n");
+    monitor_puts("INIT IDT...\n");
     init_idt();
-    monitor_puts("init idt over\n");
+    monitor_puts("INIT PAGING...\n");
     init_paging();
-    monitor_puts("init paging over\n");
     PIC_remap();
+    monitor_puts("INIT TIMER...\n");
     init_timer(500);
-    monitor_puts("init timer over\n");
+    monitor_puts("INIT KEYBOARD...\n");
+    init_keyboard();
+    monitor_puts("INIT SYSTEM CALL...\n");
     init_syscall();
-    monitor_puts("init syscall over\n");
+    monitor_puts("INIT PROCESS...\n");
     init_process0();
-    monitor_puts("init process0 over\n");
     sti();
 }
 
@@ -42,6 +45,5 @@ void welcome()
     monitor_puts("|                          |_____|                         |\n");
     monitor_puts("|                                                          |\n");
     monitor_puts("+==========================================================+\n");
-    monitor_puts("\t\t\t\t\t\t     BY CADL\n");
     monitor_puts("\n\n\n");
 }

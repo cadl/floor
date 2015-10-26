@@ -3,7 +3,6 @@
 #include <init.h>
 #include <sys.h>
 #include <asm/system.h>
-#include <syscall.h>
 
 
 int kernel_start(u32int a)
@@ -14,7 +13,7 @@ int kernel_start(u32int a)
     __asm__ volatile ("movl %0, %%esp":: "r"((u32int)(KERNEL_STACK_TOP)));
     monitor_puts("hi\n");
 
-    syscall_monitor_puts("aaa\n");
+    monitor_puts("aaa\n");
     cli();
     __asm__ volatile ("int $48"::);
     while (1)

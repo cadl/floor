@@ -10,6 +10,7 @@
 #include <process.h>
 #include <monitor.h>
 #include <asm/system.h>
+#include <usr/cadsh.h>
 
 
 void switch_to_user_mode(u32int addr)
@@ -66,7 +67,6 @@ void init_process0()
         page_alloc(tmp_page, 0, 1);
     }
     init_task();
-    monitor_puts("init task over\n");
     switch_page_directory(current_page_directory);
     switch_to_user_mode((u32int)process0_setup + (u32int)USER_CODE_START - (u32int)KERNEL_SPACE_START);
 }
@@ -74,12 +74,11 @@ void init_process0()
 void process0_start()
 {
     u32int pid;
-    syscall_monitor_puts("hello user mode\n");
     pid = syscall_fork();
 
     if (pid == 0)
     {
-        fake_shell();
+        cadsh_init();
     }
     for (;;)
     {
@@ -87,14 +86,6 @@ void process0_start()
     }
 }
 
-
-void fake_shell()
-{
-    syscall_monitor_puts("$>");
-    for (;;) {
-        syscall_pause();
-    }
-}
 
 u32int process_fork()
 {

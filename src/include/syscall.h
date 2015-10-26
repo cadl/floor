@@ -64,10 +64,9 @@ void syscall_handler(u32int in, registers_t *reg);
 void init_syscall();
 
 
-DECL_SYSCALL1(monitor_puts, char *);
+DECL_SYSCALL1(monitor_putc, char);
 DECL_SYSCALL0(fork);
 DECL_SYSCALL0(pause);
-
-
+DECL_SYSCALL0(read_keyboard);
 
 #endif

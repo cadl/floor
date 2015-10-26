@@ -56,13 +56,26 @@ proc_t* task_list_remove(proc_t **list_head, proc_t *task)
 
 void schedule()
 {
-    proc_t *next_task, *prev_task;
+    proc_t *next_task, *prev_task, *tmp_task;
 
-    next_task = current_task->next;
-    prev_task = current_task;
+    tmp_task = current_task->next;
 
-    if (next_task != current_task)
+    next_task = 0;
+    prev_task = 0;
+
+    while (tmp_task != current_task)
     {
+        if (tmp_task->state == 0)
+        {
+            next_task = tmp_task;
+            break;
+        }
+        tmp_task = tmp_task->next;
+    }
+
+    if (next_task)
+    {
+        prev_task = current_task;
         current_task = current_task->next;
         current_page_directory = current_task->page_directory;
         context_switch(&(next_task->context), &(prev_task->context), next_task->page_directory->phy_addr);
@@ -84,9 +97,32 @@ void init_task()
 
 u32int pause()
 {
-    if (current_task->next != current_task)
-    {
-        schedule();
-    }
+    schedule();
     return 0;
+}
+
+
+void sleep_on(proc_t **p)
+{
+    proc_t *tmp;
+
+    if (!p)
+        return;
+
+    tmp = *p;
+    *p = current_task;
+    current_task->state = 1;
+    schedule();
+    if (tmp)
+        tmp->state = 0;
+}
+
+
+void wake_up(proc_t **p)
+{
+    if (p && *p)
+    {
+        (**p).state = 0;
+        *p = 0;
+    }
 }

@@ -2,16 +2,21 @@
 #include <monitor.h>
 #include <process.h>
 #include <schedule.h>
+#include <keyboard.h>
+
 
 void *syscalls[SYSCALL_NUM];
 u32int ntasks;
 
+
 void init_syscall()
 {
-    syscalls[0] = monitor_puts;
+    syscalls[0] = monitor_putc;
     syscalls[1] = process_fork;
     syscalls[2] = pause;
+    syscalls[3] = read_keyboard;
 }
+
 
 void syscall_handler(u32int in, registers_t *reg)
 {
@@ -36,6 +41,7 @@ void syscall_handler(u32int in, registers_t *reg)
 }
 
 
-DEF_SYSCALL1(monitor_puts, 0, char*);
+DEF_SYSCALL1(monitor_putc, 0, char);
 DEF_SYSCALL0(fork, 1);
 DEF_SYSCALL0(pause, 2);
+DEF_SYSCALL0(read_keyboard, 3);
