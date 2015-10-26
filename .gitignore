@@ -27,3 +27,7 @@ bochsout.txt
 *.sym
 *.pyc
 \#*\#
+
+GTAGS
+GRTAGS
+GPATH
