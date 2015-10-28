@@ -23,7 +23,7 @@ void init_gdt()
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);     // Data Segment
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF);     // user mode code Segment
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF);     // user mode data segment
-    set_tss(5, 0x10, (u32int)(KERNEL_STACK_TOP-0x100));
+    set_tss(5, 0x10, (u32int)(KERNEL_STACK_TOP));
     gdt_load((u32int)&gdt_ptr);
     tss_load();
 }
@@ -102,9 +102,9 @@ void set_tss(u32int num, u16int ss0, u32int esp0)
     core_tss.ss0 = ss0;
     core_tss.esp0 = esp0;
     core_tss.cs = 0x0b;     // kernel code segment selector
-    core_tss.ss = 0x13;     // kernel data segment selector
-    core_tss.ds = 0x13;
-    core_tss.es = 0x13;
-    core_tss.fs = 0x13;
-    core_tss.gs = 0x13;
+    core_tss.ss = 0x10;     // kernel data segment selector
+    core_tss.ds = 0x10;
+    core_tss.es = 0x10;
+    core_tss.fs = 0x10;
+    core_tss.gs = 0x10;
 }

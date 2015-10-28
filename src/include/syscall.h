@@ -3,6 +3,7 @@
 
 #define SYSCALL_NUM 10
 #include <type.h>
+#include <timer.h>
 
 #define DECL_SYSCALL0(fn)                   int syscall_##fn();
 #define DECL_SYSCALL1(fn,p1)                int syscall_##fn(p1);
@@ -68,5 +69,7 @@ DECL_SYSCALL1(monitor_putc, char);
 DECL_SYSCALL0(fork);
 DECL_SYSCALL0(pause);
 DECL_SYSCALL0(read_keyboard);
+DECL_SYSCALL2(alloc_timer, timer_t **, u32int);
+DECL_SYSCALL1(wait_timer, timer_t *);
 
 #endif

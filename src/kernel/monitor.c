@@ -162,6 +162,17 @@ void monitor_put_dec(u32int n)
 }
 
 
+void monitor_putc_at(char c, u32int x, u32int y, u8int back_color, u8int fore_color)
+{
+    u16int *location;
+    u8int attrByte = (back_color << 4) | (fore_color & 0x0F);
+    u16int attr = attrByte << 8;
+
+    location = video_memory + (y*80 + x);
+    *location = (c | attr);
+}
+
+
 void panic(char *s)
 {
     monitor_puts(s);

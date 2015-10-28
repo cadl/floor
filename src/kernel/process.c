@@ -11,6 +11,7 @@
 #include <monitor.h>
 #include <asm/system.h>
 #include <usr/cadsh.h>
+#include <usr/clock.h>
 
 
 void switch_to_user_mode(u32int addr)
@@ -73,12 +74,19 @@ void init_process0()
 
 void process0_start()
 {
-    u32int pid;
+    u32int pid, ppid;
     pid = syscall_fork();
 
     if (pid == 0)
     {
-        cadsh_init();
+        ppid = syscall_fork();
+        if (ppid == 0)
+        {
+            show_clock();
+        } else
+        {
+            cadsh_init();
+        }
     }
     for (;;)
     {

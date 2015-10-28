@@ -3,6 +3,7 @@
 #include <process.h>
 #include <schedule.h>
 #include <keyboard.h>
+#include <timer.h>
 
 
 void *syscalls[SYSCALL_NUM];
@@ -15,6 +16,8 @@ void init_syscall()
     syscalls[1] = process_fork;
     syscalls[2] = pause;
     syscalls[3] = read_keyboard;
+    syscalls[4] = alloc_timer;
+    syscalls[5] = wait_timer;
 }
 
 
@@ -40,8 +43,9 @@ void syscall_handler(u32int in, registers_t *reg)
     reg->eax = ret;
 }
 
-
 DEF_SYSCALL1(monitor_putc, 0, char);
 DEF_SYSCALL0(fork, 1);
 DEF_SYSCALL0(pause, 2);
 DEF_SYSCALL0(read_keyboard, 3);
+DEF_SYSCALL2(alloc_timer, 4, timer_t**, u32int);
+DEF_SYSCALL1(wait_timer, 5, timer_t*);

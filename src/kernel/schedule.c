@@ -58,6 +58,7 @@ void schedule()
 {
     proc_t *next_task, *prev_task, *tmp_task;
 
+    // monitor_puts("schedule\n");
     tmp_task = current_task->next;
 
     next_task = 0;
@@ -76,7 +77,7 @@ void schedule()
     if (next_task)
     {
         prev_task = current_task;
-        current_task = current_task->next;
+        current_task = next_task;
         current_page_directory = current_task->page_directory;
         context_switch(&(next_task->context), &(prev_task->context), next_task->page_directory->phy_addr);
     }

@@ -13,7 +13,6 @@
 
 void init()
 {
-    cli();
     monitor_clear();
     welcome();
     monitor_puts("INIT GDT... \n");
@@ -24,14 +23,13 @@ void init()
     init_paging();
     PIC_remap();
     monitor_puts("INIT TIMER...\n");
-    init_timer(500);
+    init_timer(100);
     monitor_puts("INIT KEYBOARD...\n");
     init_keyboard();
     monitor_puts("INIT SYSTEM CALL...\n");
     init_syscall();
     monitor_puts("INIT PROCESS...\n");
     init_process0();
-    sti();
 }
 
 void welcome()

@@ -1,5 +1,5 @@
 SUBDIR=kernel/
-OBJS=entry.o setup.o monitor.o des.o int.o interrupt.o timer.o pic.o init.o string.o schedule.o asm.o syscall.o process.o switch.o keyboard.o cadsh.o stdio.o
+OBJS=entry.o setup.o monitor.o des.o int.o interrupt.o timer.o pic.o init.o string.o schedule.o asm.o syscall.o process.o switch.o keyboard.o cadsh.o stdio.o clock.o
 
 kernel.o:$(OBJS)
 	$(LD) -r $^ $(LDFLAGS) -o kernel.o
