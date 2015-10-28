@@ -13,6 +13,7 @@
 
 void init()
 {
+    cli();
     monitor_clear();
     welcome();
     monitor_puts("INIT GDT... \n");
@@ -29,6 +30,7 @@ void init()
     monitor_puts("INIT SYSTEM CALL...\n");
     init_syscall();
     monitor_puts("INIT PROCESS...\n");
+    sti();
     init_process0();
 }
 

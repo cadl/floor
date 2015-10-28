@@ -57,7 +57,7 @@ int syscall_##fn(P1 p1, P2 p2, P3 p3, P4 p4)\
 int syscall_##fn(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)\
 {\
      int a;\
-     __asm__ volatile("int $0x30" : "=a" (a) : "a" (num), "b" ((u32int)p1), "c" ((u32int)p2), "d"((u32int)p3), "S"((u32int)p4), "D"(u32int)p5);\
+     __asm__ volatile("int $0x30" : "=a" (a) : "a" (num), "b" ((u32int)p1), "c" ((u32int)p2), "d"((u32int)p3), "S"((u32int)p4), "D"((u32int)p5)); \
      return a;\
 }
 
@@ -71,5 +71,6 @@ DECL_SYSCALL0(pause);
 DECL_SYSCALL0(read_keyboard);
 DECL_SYSCALL2(alloc_timer, timer_t **, u32int);
 DECL_SYSCALL1(wait_timer, timer_t *);
+DECL_SYSCALL5(monitor_putc_at, char, u32int, u32int, u8int, u8int);
 
 #endif
