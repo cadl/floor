@@ -72,5 +72,7 @@ DECL_SYSCALL0(read_keyboard);
 DECL_SYSCALL2(alloc_timer, timer_t **, u32int);
 DECL_SYSCALL1(wait_timer, timer_t *);
 DECL_SYSCALL5(monitor_putc_at, char, u32int, u32int, u8int, u8int);
+DECL_SYSCALL0(read_keyboard_nonblock);
+DECL_SYSCALL0(monitor_clear);
 
 #endif

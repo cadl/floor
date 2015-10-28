@@ -19,6 +19,8 @@ void init_syscall()
     syscalls[4] = alloc_timer;
     syscalls[5] = wait_timer;
     syscalls[6] = monitor_putc_at;
+    syscalls[7] = read_keyboard_nonblock;
+    syscalls[8] = monitor_clear;
 }
 
 
@@ -51,3 +53,5 @@ DEF_SYSCALL0(read_keyboard, 3);
 DEF_SYSCALL2(alloc_timer, 4, timer_t**, u32int);
 DEF_SYSCALL1(wait_timer, 5, timer_t*);
 DEF_SYSCALL5(monitor_putc_at, 6, char, u32int, u32int, u8int, u8int);
+DEF_SYSCALL0(read_keyboard_nonblock, 7);
+DEF_SYSCALL0(monitor_clear, 8);

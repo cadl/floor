@@ -1,4 +1,5 @@
 #include <string.h>
+#include <usr/stdio.h>
 #include <type.h>
 
 void memset(void *s, u8int c, u32int n) // c value, n byte

@@ -22,3 +22,15 @@ char getch()
 {
     return syscall_read_keyboard();
 }
+
+
+char getch_nonblock()
+{
+    return syscall_read_keyboard_nonblock();
+}
+
+
+void clear()
+{
+    syscall_monitor_clear();
+}

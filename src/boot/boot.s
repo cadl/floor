@@ -46,7 +46,7 @@ start_program:
 
 read_loop:
     movb $0x02, %ah
-    movb $50, %al
+    movb $60, %al
     movb $0x0, %dh
     movb $0, %dl
     int $0x13

@@ -89,3 +89,22 @@ char read_keyboard()
     keyboard_buffer_index -= 1;
     return c;
 }
+
+
+char read_keyboard_nonblock()
+{
+    char c;
+    u32int i;
+
+    if (keyboard_buffer_index == 0)
+    {
+        return 0;
+    }
+
+    c = keyboard_buffer[0];
+    for (i=0; i<keyboard_buffer_index-1; i++) {
+        keyboard_buffer[i] = keyboard_buffer[i+1];
+    }
+    keyboard_buffer_index -= 1;
+    return c;
+}

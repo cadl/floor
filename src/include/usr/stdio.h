@@ -6,5 +6,7 @@
 void puts(char *s);
 void putch(char c);
 char getch();
+char getch_nonblock();
+void clear();
 
 #endif
